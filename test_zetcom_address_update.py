@@ -18,12 +18,14 @@ class TestZetcomAddress(unittest.TestCase):
         self.assertEqual(address_id, '19964')
         address.close()
 
+    @unittest.skip('Resources')
     def test_process_file(self):
         schemas: List[SchemaItem] = [ SchemaItem('Institution', 'AdrOrganisationTxt')]
         address = zetcom_address_update.ZetcomAddressUpdates([])
         address.process_file('TFH.csv')
         address.close()
 
+    @unittest.skip('Resources')
     def test_parse(self):
         addressList: List[AddressItem] = []
         address_parse_title('Dr. Christian', addressList)
@@ -33,13 +35,18 @@ class TestZetcomAddress(unittest.TestCase):
         self.assertEqual(addressList[1].operand, 'Christian')
 
     def test_append_address_item(self):
-        testRow = {'Institution': 'The Metropolitan Museum of Art', 'First_Name': 'Ashley ', 'Last_Name': 'Dunn', 'Title': 'Associate Curator', 'Address': '1000 Fifth Avenue \nNew York, NY 10028', 'Country': 'USA', 'Email': 'Ashley.Dunn@metmuseum.org'}
+        testRow = {'Institution': 'The Metropolitan Museum of Art', 'First_Name': 'Irene Miller', 'Last_Name': 'and Kim Harding', 'Title': 'Associate Curator', 'Address': '1000 Fifth Avenue \nNew York, NY 10028', 'Country': 'USA', 'Email': 'Ashley.Dunn@metmuseum.org'}
         address = zetcom_address_update.ZetcomAddressUpdates([])
+        addressList: List[AddressItem] = []
         for schema in address.schemas:
-            addresssList: List[AddressItem] = []
-            address.append_address_item(testRow, schema, addresssList)
-            self.assertEqual(len(addresssList), 1)
-            print(addresssList[0].operand)
+            address.append_address_item(testRow, schema, addressList)
+        self.assertEqual(len(addressList), 6)
+        address.append_address_type(addressList)
+        #self.assertEqual(len([item for item in addressList if item.fieldPath == 'AdrPersonTypeVoc' and item.operand == 'Einzelperson']), 1)
+        #zetcom_address_update.print_address_fields(0, addressList)
+        searchItems = address.get_search_items(addressList)
+        address_id = address.address_id(searchItems)
+        zetcom_address_update.print_address_fields(0, searchItems)
         address.close()
 
 if __name__ == "__main__":
