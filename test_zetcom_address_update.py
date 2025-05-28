@@ -3,18 +3,44 @@ from os import sep, path
 import lxml.etree as ET
 import sys
 import zetcom_address_update
-from zetcom_address_update import AddressItem as Item
+from zetcom_address_update import AddressItem
+from zetcom_address_update import SchemaItem 
+from zetcom_address_update import address_parse_title
 from typing import List
 
 
 class TestZetcomAddress(unittest.TestCase):
+    @unittest.skip('Resources')
     def test_address_id(self):
-        address = zetcom_address_update.ZetcomAddressUpdates()
-        items: List[Item] = [ Item('AdrOrganisationTxt','Kunstmuseum Basel'), Item('AdrSurNameTxt', 'Selz'), Item('AdrForeNameTxt', 'Christian') ] 
+        address = zetcom_address_update.ZetcomAddressUpdates([])
+        items: List[AddressItem] = [ AddressItem('AdrOrganisationTxt','Kunstmuseum Basel'), AddressItem('AdrSurNameTxt', 'Selz'), AddressItem('AdrForeNameTxt', 'Christian') ] 
         address_id = address.address_id(items)
         self.assertEqual(address_id, '19964')
         address.close()
 
+    def test_process_file(self):
+        schemas: List[SchemaItem] = [ SchemaItem('Institution', 'AdrOrganisationTxt')]
+        address = zetcom_address_update.ZetcomAddressUpdates([])
+        address.process_file('TFH.csv')
+        address.close()
+
+    def test_parse(self):
+        addressList: List[AddressItem] = []
+        address_parse_title('Dr. Christian', addressList)
+        self.assertEqual(len(addressList), 2)
+        self.assertEqual(addressList[0].fieldPath, 'AdrAcademicTitleVoc')
+        self.assertEqual(addressList[0].operand, 'Dr.')
+        self.assertEqual(addressList[1].operand, 'Christian')
+
+    def test_append_address_item(self):
+        testRow = {'Institution': 'The Metropolitan Museum of Art', 'First_Name': 'Ashley ', 'Last_Name': 'Dunn', 'Title': 'Associate Curator', 'Address': '1000 Fifth Avenue \nNew York, NY 10028', 'Country': 'USA', 'Email': 'Ashley.Dunn@metmuseum.org'}
+        address = zetcom_address_update.ZetcomAddressUpdates([])
+        for schema in address.schemas:
+            addresssList: List[AddressItem] = []
+            address.append_address_item(testRow, schema, addresssList)
+            self.assertEqual(len(addresssList), 1)
+            print(addresssList[0].operand)
+        address.close()
 
 if __name__ == "__main__":
     unittest.main()

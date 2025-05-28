@@ -16,6 +16,8 @@
 #
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/> 1}}}
+from colorama import Fore, Style
+import csv
 import getpass
 import getopt
 import glob
@@ -23,6 +25,7 @@ import json
 import keyring
 import keyring.util.platform_ as keyring_platform
 import os
+import re
 import requests
 import sys
 import urllib.parse
@@ -34,14 +37,40 @@ from typing import List
 
 DEBUG = False 
 
+
 class AddressItem:
-    def __init__(self, fieldPath, operand):
+    def __init__(self, fieldPath: str, operand: str):
         self.fieldPath = fieldPath
         self.operand = operand
+        self.addr_id = None
+
+    def add(addr_id: str):
+        self.addr_id = addr_id
+
+    def __str__(self):
+        return f'fieldPath: {self.fieldPath}, operand: {self.operand}, addr_id: {self.addr_id}'
+
+class SchemaItem:
+    def __init__(self, csvField: str, fieldPath: str, testFunction=None):
+        self.fieldPath = fieldPath
+        self.csvField = csvField
+        self.testFunction = testFunction
+
+def address_parse_title(content, addressList: List[AddressItem]):
+    p = re.compile('[A-Z][a-z]+\.\s') 
+    if p.match(content):
+        split_content = content.split(' ')
+        title = split_content[0].replace('a','')
+        forename = split_content[1]
+        addressList.append(AddressItem('AdrAcademicTitleVoc',title)) 
+        addressList.append(AddressItem('AdrForeNameTxt',forename)) 
 
 class ZetcomAddressUpdates:
     """This class can be used to update address
     """
+    DEFAULT_SCHEMA: List[SchemaItem] = [ SchemaItem('Institution', 'AdrOrganisationTxt'), SchemaItem('First_Name', 'AdrForeNameTxt', address_parse_title),\
+            SchemaItem('Last_Name', 'AdrSurNameTxt'), SchemaItem('Country', 'AdrCountryVoc')
+            ]
     XML_SEARCH = b'<?xml version="1.0" encoding="UTF-8"?> \
     <application xmlns="http://www.zetcom.com/ria/ws/module/search" \
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
@@ -56,7 +85,11 @@ class ZetcomAddressUpdates:
                 </modules> \
     </application>' 
 
-    def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
+    def __init__(self, schemas: List[SchemaItem], username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
+        if len(schemas) > 0:
+            self.schemas = schemas
+        else:
+            self.schemas = self.DEFAULT_SCHEMA
         self.zsession = zetcom_session.ZetcomSession(username, server)
         self.zsession.open()
         
@@ -83,8 +116,27 @@ class ZetcomAddressUpdates:
     def close(self):
         self.zsession.close()
 
-def process_file() ->int:
-    return 0
+    def append_address_item(self, row: dict, schema: SchemaItem, addressList: List[AddressItem]):
+        operand = row[schema.csvField]
+        fieldPath = schema.fieldPath
+        addressList.append(AddressItem(fieldPath, operand))
+
+    def process_file(self, csvFile: str, targetFile='') ->int:
+        with open(csvFile, newline='') as openFile: 
+            reader = csv.DictReader(openFile)
+            ignoreString = 'Source not yet identified'
+            lastInstitution = ''
+            lastName = ''
+            for row in reader:
+                addressList: List[AddressItem] = []
+                if not row['Institution'].startswith(ignoreString) and row['Institution'] != lastInstitution and row['First_Name'].strip() + row['Last_Name'].strip() != lastName:
+                    lastInstitution = row['Institution']
+                    lastName = row['First_Name'].strip() + row['Last_Name'].strip()
+                    for schema in self.schemas:
+                        self.append_address_item(row, schema, addressList)
+                    for item in addressList:
+                        print(item)
+        return 0
 
 def usage():
     """prints information on how to use the script
@@ -126,5 +178,4 @@ def main(argv):
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
-
 
