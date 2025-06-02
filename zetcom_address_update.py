@@ -35,6 +35,8 @@ import lxml.etree as LET
 import zetcom_session
 from typing import List
 
+TITLE_DICT = {"Dr.": "30134", }
+ADDR_TYPE_DICT = { "person": "157755", "institution": "157754", "couple": "157753" }
 COUNTRY_DICT = {"Argentina": "Argentinien", "Australia": "Australien", "Brazil": "Brasilien", "Canada": "Kanada", "Chile": "Chile", "Colombia": "Kolumbien", "Croatia": "Kroatien", "Denmark": "Dänemark", "Ecuador": "Ecuador", "Finland": "Finnland", "France": "Frankreich", "Germany": "Deutschland", "Italy": "Italien", "Japan": "Japan", "Mexico": "Mexiko", "Monaco": "Monaco", "Netherlands": "Niederlande", "Peru": "Peru", "Slovakia": "Slovakei", "Spain": "Spanien", "Sweden": "Schweden", "Switzerland": "Schweiz", "UK": "Vereinigtes Königreich, Großbritannien", "USA": "Vereinigte Staaten von Amerika", "Wales": "Vereinigtes Königreich, Großbritannien"}
 DEBUG = False 
 
@@ -81,17 +83,36 @@ def address_parse_title(content, addressList: List[AddressItem], titleFieldName=
     else:
         addressList.append(AddressItem(fornameFieldName, content.strip())) 
 
+def parse_address_parts(content, addressList: List[AddressItem]):
+    p = re.compile('.*\n.*')
+    q = re.compile('.*,.*')
+    if p.match(content):
+        lines = [ line for line in content.split('\n') if line != '']
+        print(lines)
+    elif q.match(content):
+        lines = [ line for line in content.split(',') if line != '']
+        print(lines)
+    else:
+        addressList.append(AddressItem('AdrCityTxt', content.strip()))
+
 def update_country_information(content, addressList: List[AddressItem]):
-    if content in COUNTRY_DICT.keys():
-        content = COUNTRY_DICT[content]
-    addressList.append(AddressItem('AdrCountryVoc', content))
+    country_key = content.strip() 
+    if country_key in COUNTRY_DICT.keys():
+        country_key = COUNTRY_DICT[country_key]
+    addressList.append(AddressItem('AdrCountryVoc', country_key))
 
 class ZetcomAddressUpdates:
     """This class can be used to update address
     """
-
+    OUTPUT_SCHEMA: List[SchemaItem] = [ SchemaItem('Adresstyp', 'AdrPersonTypeVoc'), SchemaItem('Institution', 'AdrOrganisationTxt'),\
+            SchemaItem('Nachname', 'AdrSurNameTxt'), SchemaItem('Vorname','AdrForeNameTxt'), SchemaItem('Titel', 'AdrAcademicTitleVoc'),\
+            SchemaItem('Nachname2','AdrSurNamePartnerTxt'), SchemaItem('Vorname2', 'AdrForeNamePartnerTxt'), SchemaItem('Titel2', 'AdrAcademicTitlePartnerVoc'),\
+            SchemaItem('Language', 'AdrLanguageVoc'), SchemaItem('Funktion','AdrFunctionVoc'), SchemaItem('E-Mail', 'AdrContactGrp1'), SchemaItem('E-Mail2', 'AdrContactGrp2'),\
+            SchemaItem('Address', 'AdrStreeTxt'), SchemaItem('PLZ', 'AdrPostcodeTxt'), SchemaItem('Ort', 'AdrCityTxt'), SchemaItem('Land', 'AdrCountryVoc')
+            ]
     DEFAULT_SCHEMA: List[SchemaItem] = [ SchemaItem('Institution', 'AdrOrganisationTxt'), SchemaItem('First_Name', 'AdrForeNameTxt', address_parse_title),\
-            SchemaItem('Last_Name', 'AdrSurNameTxt', address_parse_pairs), SchemaItem('Country', 'AdrCountryVoc', update_country_information)
+            SchemaItem('Last_Name', 'AdrSurNameTxt', address_parse_pairs), SchemaItem('Country', 'AdrCountryVoc', update_country_information), SchemaItem('Title', 'AdrFunctionVoc'),\
+            SchemaItem('Address', 'AdrStreetTxt', parse_address_parts)\
             ]
     XML_SEARCH = b'<?xml version="1.0" encoding="UTF-8"?> \
     <application xmlns="http://www.zetcom.com/ria/ws/module/search" \
@@ -122,13 +143,14 @@ class ZetcomAddressUpdates:
         search_tree = LET.fromstring(self.XML_SEARCH)
         namespaces['search'] =  search_tree.nsmap[None]
         andNode = search_tree.xpath('//search:expert/search:and', namespaces=namespaces)[0]
+        if len(addressItems) == 1:
+            addressItems.append(AddressItem('AdrPersonTypeVoc', ADDR_TYPE_DICT['institution']))
         for item in addressItems:
             element = LET.Element("equalsField")
             element.attrib['fieldPath'] = item.fieldPath
             element.attrib['operand'] = item.operand
             andNode.append(element)
         xml_string = LET.tostring(search_tree, encoding='UTF-8')
-        print(xml_string)
         xml = self.zsession.post('/ria-ws/application/module/Address/search', xml_string) 
         namespaces['module'] = xml.nsmap[None] 
         if len(xml.xpath('//module:module/module:moduleItem', namespaces=namespaces)) > 0:
@@ -151,15 +173,15 @@ class ZetcomAddressUpdates:
     def append_address_type(self, addressList: List[AddressItem]):
         partnerField = 'AdrForeNamePartnerTxt'
         if len([ item for item in addressList if item.fieldPath == partnerField ]) > 0:
-            addressList.append(AddressItem('AdrPersonTypeVoc', 'Paar'))
+            addressList.append(AddressItem('AdrPersonTypeVoc', 'couple'))
         elif len([ item for item in addressList if item.fieldPath == 'AdrForeNameTxt' and item.operand == '' ]) > 0 \
                 and len([ item for item in addressList if item.fieldPath == 'AdrSurNameTxt' and item.operand == '' ]) > 0:
-            addressList.append(AddressItem('AdrPersonTypeVoc', 'Institution'))
+            addressList.append(AddressItem('AdrPersonTypeVoc', 'institution'))
         else:
-            addressList.append(AddressItem('AdrPersonTypeVoc', 'Einzelperson'))
+            addressList.append(AddressItem('AdrPersonTypeVoc', 'person'))
 
     def get_search_items(self, addressList: List[AddressItem]) -> List[AddressItem]:
-        if len([item for item in addressList if item.fieldPath == 'AdrPersonTypeVoc' and item.operand == 'Institution']) == 1:
+        if len([item for item in addressList if item.fieldPath == 'AdrPersonTypeVoc' and item.operand == 'institution']) == 1:
             return [item for item in addressList if item.fieldPath == 'AdrOrganisationTxt']
         else:
             fieldPaths = ['AdrOrganisationTxt', 'AdrForeNameTxt', 'AdrSurNameTxt']
@@ -180,9 +202,21 @@ class ZetcomAddressUpdates:
                     for schema in self.schemas:
                         self.append_address_item(row, schema, addressList)
                     self.append_address_type(addressList)
-                    print_address_fields(counter, addressList)
+                    search_items = self.get_search_items(addressList)
+                    addr_id = self.address_id(search_items)
+                    if addr_id is None:
+                        self.print_row(addressList)
                     counter += 1
         return 0
+
+    def print_row(self, addressList: List[AddressItem]):
+        for schema in self.OUTPUT_SCHEMA:
+            item = [ item for item in addressList if item.fieldPath == schema.fieldPath ]
+            if len(item) > 0:
+                print(f'\"{item[0].operand}\"', end=",")
+            else:
+                print('\"\"', end=",")
+        print()
 
 def print_address_fields(counter, addressList: List[AddressItem]):
     print(str(counter) + "|", end='')
