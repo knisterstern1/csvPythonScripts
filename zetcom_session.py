@@ -41,6 +41,16 @@ class ZetcomSession:
         self.session = requests.Session()
         self.key = None
 
+    def get(self, url: str) -> LET:
+        """GET a xml response
+        """
+        get_url = self.server + url
+        response = self.session.get(get_url)
+        if response.status_code == 200:
+           return LET.fromstring(response.content) 
+        else:
+            raise Exception(response.status_code)
+
     def open(self, attempt=0):
         """Open a session on the server
         """
@@ -60,7 +70,7 @@ class ZetcomSession:
            namespaces = { 'session': xml_response.nsmap[None] }
            if len(xml_response.xpath('//session:key', namespaces=namespaces)) > 0:
                self.key = xml_response.xpath('//session:key', namespaces=namespaces)[0].text
-               self.session.auth = (f'user[{credentials.username}]', f'session[{self.key}]')
+               self.session.auth = (f'user[{self.username}]', f'session[{self.key}]')
            else:
                raise Exception('No session key found!')
         elif attempt < 3:

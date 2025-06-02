@@ -25,6 +25,7 @@ import json
 import keyring
 import keyring.util.platform_ as keyring_platform
 import os
+import pandas as pd
 import re
 import requests
 import sys
@@ -36,14 +37,13 @@ import zetcom_session
 from typing import List
 
 TITLE_DICT = {"Dr.": "30134", }
-ADDR_TYPE_DICT = { "person": "157755", "institution": "157754", "couple": "157753" }
 COUNTRY_DICT = {"Argentina": "Argentinien", "Australia": "Australien", "Brazil": "Brasilien", "Canada": "Kanada", "Chile": "Chile", "Colombia": "Kolumbien", "Croatia": "Kroatien", "Denmark": "Dänemark", "Ecuador": "Ecuador", "Finland": "Finnland", "France": "Frankreich", "Germany": "Deutschland", "Italy": "Italien", "Japan": "Japan", "Mexico": "Mexiko", "Monaco": "Monaco", "Netherlands": "Niederlande", "Peru": "Peru", "Slovakia": "Slovakei", "Spain": "Spanien", "Sweden": "Schweden", "Switzerland": "Schweiz", "UK": "Vereinigtes Königreich, Großbritannien", "USA": "Vereinigte Staaten von Amerika", "Wales": "Vereinigtes Königreich, Großbritannien"}
 DEBUG = False 
 
 class AddressItem:
     def __init__(self, fieldPath: str, operand: str):
         self.fieldPath = fieldPath
-        self.operand = operand
+        self.operand = operand.strip()
 
 
     def __str__(self):
@@ -86,20 +86,54 @@ def address_parse_title(content, addressList: List[AddressItem], titleFieldName=
 def parse_address_parts(content, addressList: List[AddressItem]):
     p = re.compile('.*\n.*')
     q = re.compile('.*,.*')
-    if p.match(content):
-        lines = [ line for line in content.split('\n') if line != '']
-        print(lines)
-    elif q.match(content):
-        lines = [ line for line in content.split(',') if line != '']
-        print(lines)
-    else:
+    if not p.match(content) and not q.match(content):
         addressList.append(AddressItem('AdrCityTxt', content.strip()))
+    else:
+        lines = [ line for line in content.split('\n') if line != ''] \
+                if p.match(content) and len([ line for line in content.split('\n') if line != '']) > 1\
+                else [ line for line in content.split(',') if line != '']
+        plz_ort = re.compile('([A-Z]-)*(.*\d)(\s)(\w*)')
+        if len(lines) == 2:
+            addressList.append(AddressItem('AdrStreeTxt', lines[0]))
+            if plz_ort.match(lines[1]):
+                plz_ort_groups = plz_ort.match(lines[1]).groups()
+                addressList.append(AddressItem('AdrPostcodeTxt', plz_ort_groups[1]))
+                addressList.append(AddressItem('AdrCityTxt', plz_ort_groups[-1]))
+            else:
+                addressList.append(AddressItem('AdrCityTxt', lines[1]))
+        else:
+            plz = re.compile('.*\d.*')
+            if plz.match(lines[-1]):
+                addressList.append(AddressItem('AdrPostcodeTxt', lines[-1]))
+                addressList.append(AddressItem('AdrCityTxt', lines[-2]))
+                addressList.append(AddressItem('AdrStreeTxt','\n'.join(lines[0:-2])))
+            elif plz.match(lines[-2]):
+                addressList.append(AddressItem('AdrPostcodeTxt', lines[-2]))
+                addressList.append(AddressItem('AdrCityTxt', lines[-1]))
+                addressList.append(AddressItem('AdrStreeTxt','\n'.join(lines[0:-2])))
+            else:
+                if plz_ort.match(lines[-1]):
+                    plz_ort_groups = plz_ort.match(lines[1]).groups()
+                    addressList.append(AddressItem('AdrPostcodeTxt', plz_ort_groups[1]))
+                    addressList.append(AddressItem('AdrCityTxt', plz_ort_groups[-1]))
+                else:
+                    addressList.append(AddressItem('AdrCityTxt', lines[-1]))
+                addressList.append(AddressItem('AdrStreeTxt','\n'.join(lines[0:-1])))
 
 def update_country_information(content, addressList: List[AddressItem]):
     country_key = content.strip() 
     if country_key in COUNTRY_DICT.keys():
         country_key = COUNTRY_DICT[country_key]
     addressList.append(AddressItem('AdrCountryVoc', country_key))
+
+def parse_pair_emails(content, addressList: List[AddressItem]):
+    k = re.compile('.*@.*,.*@.*')
+    if k.match(content):
+        emails = [ email.strip() for email in content.split(',') ]
+        addressList.append(AddressItem('AdrContactGrp1', emails[0]))
+        addressList.append(AddressItem('AdrContactGrp2', emails[1]))
+    else:
+        addressList.append(AddressItem('AdrContactGrp1', content))
 
 class ZetcomAddressUpdates:
     """This class can be used to update address
@@ -112,7 +146,7 @@ class ZetcomAddressUpdates:
             ]
     DEFAULT_SCHEMA: List[SchemaItem] = [ SchemaItem('Institution', 'AdrOrganisationTxt'), SchemaItem('First_Name', 'AdrForeNameTxt', address_parse_title),\
             SchemaItem('Last_Name', 'AdrSurNameTxt', address_parse_pairs), SchemaItem('Country', 'AdrCountryVoc', update_country_information), SchemaItem('Title', 'AdrFunctionVoc'),\
-            SchemaItem('Address', 'AdrStreetTxt', parse_address_parts)\
+            SchemaItem('Address', 'AdrStreetTxt', parse_address_parts), SchemaItem('Email', 'AdrContactGrp1', parse_pair_emails)\
             ]
     XML_SEARCH = b'<?xml version="1.0" encoding="UTF-8"?> \
     <application xmlns="http://www.zetcom.com/ria/ws/module/search" \
@@ -133,9 +167,22 @@ class ZetcomAddressUpdates:
             self.schemas = schemas
         else:
             self.schemas = self.DEFAULT_SCHEMA
+        self.address_types = {}
         self.zsession = zetcom_session.ZetcomSession(username, server)
         self.zsession.open()
-        
+        self._init_addr_type_dict()
+       
+    def _init_addr_type_dict(self):
+        """Initialize the address type dictionary
+        """
+        self.addr_type_dict = {}
+        namespaces = {}
+        xml_tree = self.zsession.get("/ria-ws/application/vocabulary/instances/AdrPersonTypeVgr/nodes/search")
+        namespaces['collection'] = xml_tree.nsmap[None]
+        nodes = xml_tree.xpath('//collection:collection/collection:node', namespaces=namespaces)
+        for node in nodes:
+            self.addr_type_dict[node.attrib['logicalName']] = node.attrib['id'] 
+
     def address_id(self, addressItems: List[AddressItem]) ->str:
         """Get address id or None if it does not exist
         """
@@ -144,7 +191,7 @@ class ZetcomAddressUpdates:
         namespaces['search'] =  search_tree.nsmap[None]
         andNode = search_tree.xpath('//search:expert/search:and', namespaces=namespaces)[0]
         if len(addressItems) == 1:
-            addressItems.append(AddressItem('AdrPersonTypeVoc', ADDR_TYPE_DICT['institution']))
+            addressItems.append(AddressItem('AdrPersonTypeVoc', self.addr_type_dict['institution']))
         for item in addressItems:
             element = LET.Element("equalsField")
             element.attrib['fieldPath'] = item.fieldPath
@@ -188,6 +235,8 @@ class ZetcomAddressUpdates:
             return [item for item in addressList if item.fieldPath in fieldPaths]
 
     def process_file(self, csvFile: str, targetFile='') ->int:
+        output_rows: List[dict]  = []
+        output_existing_ids = []
         with open(csvFile, newline='') as openFile: 
             reader = csv.DictReader(openFile)
             ignoreString = 'Source not yet identified'
@@ -205,17 +254,35 @@ class ZetcomAddressUpdates:
                     search_items = self.get_search_items(addressList)
                     addr_id = self.address_id(search_items)
                     if addr_id is None:
-                        self.print_row(addressList)
+                        self.print_row(addressList, output_rows)
+                    else:
+                        output_existing_ids.append(addr_id)
                     counter += 1
+        if targetFile != '':
+            with open(targetFile, 'w', newline='') as writeFile:
+                fieldnames = [ schema.csvField for schema in self.OUTPUT_SCHEMA ] 
+                writer = csv.DictWriter(writeFile, fieldnames=fieldnames)
+                writer.writeheader()
+                for row in output_rows:
+                    writer.writerow(row)
+        if len(output_existing_ids) > 0:
+            id_file = targetFile.replace('.csv','.txt')
+            with open(id_file, 'a') as writeIdFile:
+                for old_addr_id in output_existing_ids:
+                    writeIdFile.write(old_addr_id + '\n')
         return 0
 
-    def print_row(self, addressList: List[AddressItem]):
+    def print_row(self, addressList: List[AddressItem], output_rows: List[dict]):
+        addressDict = {}
         for schema in self.OUTPUT_SCHEMA:
             item = [ item for item in addressList if item.fieldPath == schema.fieldPath ]
             if len(item) > 0:
+                addressDict[schema.csvField] = item[0].operand
                 print(f'\"{item[0].operand}\"', end=",")
             else:
+                addressDict[schema.csvField] = "" 
                 print('\"\"', end=",")
+        output_rows.append(addressDict)
         print()
 
 def print_address_fields(counter, addressList: List[AddressItem]):
@@ -250,8 +317,9 @@ def main(argv):
 
         OPTIONS:
         -h|--help                      show help
-        -f|--file                      csv file 
-        -s|--server + zetcom_server:   provide dsp_server address
+        -f|--file                      input csv file 
+        -o|--output                    output csv file
+        -s|--server + mplus:           provide mplus address
         -u|--user:                     provide username as email address
     
         :return: exit code (int)
@@ -260,8 +328,9 @@ def main(argv):
     zetcom_server = 'https://mptest.kumu.swiss'
     xml_file = ''
     csv_file = ''
+    output_file = ''
     try:
-        opts, args = getopt.getopt(argv, "hf:s:u:x:", ["help", "file=","server=", "user=", "xml="])
+        opts, args = getopt.getopt(argv, "hf:o:s:u:x:", ["help", "file=","output=","server=", "user=", "xml="])
     except getopt.GetoptError:
         usage()
         return 2
@@ -271,6 +340,8 @@ def main(argv):
             return 0
         elif opt in ('-f', '--file'):
             csv_file = arg
+        elif opt in ('-o', '--output'):
+            output_file = arg
         elif opt in ('-s', '--server'):
             zetcom_server = arg
         elif opt in ('-u', '--user'):
@@ -278,7 +349,11 @@ def main(argv):
         elif opt in ('-x', '--xml'):
             xml_file = arg
     if csv_file != '':
-        return process_file(csv_file)
+        output_file = output_file if output_file != '' else 'address_output_' + csv_file
+        address = ZetcomAddressUpdates([], username, zetcom_server)
+        address.process_file(csv_file, output_file)
+        address.close()
+        #return process_file(csv_file)
     return 0 
 
 

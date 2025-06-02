@@ -6,22 +6,36 @@ import sys
 import zetcom_address_update
 from zetcom_address_update import AddressItem
 from zetcom_address_update import SchemaItem 
-from zetcom_address_update import address_parse_title, parse_address_parts
+from zetcom_address_update import address_parse_title, parse_address_parts, print_address_fields
 from typing import List
 
 
 class TestZetcomAddress(unittest.TestCase):
+    def test_create_addr_type_dict(self):
+        address = zetcom_address_update.ZetcomAddressUpdates([])
+        address._init_addr_type_dict()
+        self.assertEqual(len(address.addr_type_dict.keys()), 3)
+        address.close()
+
+    @unittest.skip('Resources')
     def test_parse_address(self):
-        content = "National Museum Cardiff \
-                    Cathays Park \
-                    Cardiff \
-                    CF10 3NP"
         institution = 'Amgueddfa Cymru National Museum Wales'
+        addressList: List[AddressItem] = []
         with open('TFH.csv', newline='') as openFile: 
             reader = csv.DictReader(openFile)
             for row in reader:
                 if row['Institution'] == institution:
-                    parse_address_parts(row['Address'], [])
+                    parse_address_parts(row['Address'], addressList)
+        self.assertEqual(len(addressList), 3)
+        institution = 'Deutsches Historisches Museum'
+        addressList: List[AddressItem] = []
+        with open('TFH.csv', newline='') as openFile: 
+            reader = csv.DictReader(openFile)
+            for row in reader:
+                if row['Institution'] == institution:
+                    parse_address_parts(row['Address'], addressList)
+        self.assertEqual(len(addressList), 3)
+        print_address_fields(0, addressList)
 
     @unittest.skip('Resources')
     def test_address_id(self):
@@ -38,7 +52,7 @@ class TestZetcomAddress(unittest.TestCase):
     @unittest.skip('Resources')
     def test_process_file(self):
         address = zetcom_address_update.ZetcomAddressUpdates([])
-        address.process_file('TFH.csv')
+        address.process_file('TFH.csv', 'test.csv')
         address.close()
 
     @unittest.skip('Resources')

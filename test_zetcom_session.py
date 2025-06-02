@@ -11,6 +11,13 @@ class TestZetcomTest(unittest.TestCase):
         self.assertEqual(zsession.username,'SimpleUserTest')
         zsession.close()
 
+    def test_check_get(self):
+        zsession = zetcom_session.ZetcomSession()
+        zsession.open()
+        xml = zsession.get("/ria-ws/application/vocabulary/instances/AdrPersonTypeVgr/nodes/search")
+        self.assertEqual(xml.nsmap[None], "http://www.zetcom.com/ria/ws/vocabulary")
+        zsession.close()
+
     def test_check_open(self):
         zsession = zetcom_session.ZetcomSession()
         zsession.open()
