@@ -5,7 +5,7 @@ import lxml.etree as ET
 import sys
 import zetcom_address_update
 from zetcom_address_update import AddressItem
-from zetcom_address_update import SchemaItem 
+from zetcom_session import SchemaItem 
 from zetcom_address_update import address_parse_title, parse_address_parts, print_address_fields
 from typing import List
 

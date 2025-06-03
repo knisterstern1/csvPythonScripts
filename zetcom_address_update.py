@@ -25,7 +25,6 @@ import json
 import keyring
 import keyring.util.platform_ as keyring_platform
 import os
-import pandas as pd
 import re
 import requests
 import sys
@@ -34,26 +33,21 @@ import xml.dom.minidom as MD
 from xml.etree import ElementTree
 import lxml.etree as LET
 import zetcom_session
+from zetcom_session import DataItem, SchemaItem
 from typing import List
 
 TITLE_DICT = {"Dr.": "30134", }
 COUNTRY_DICT = {"Argentina": "Argentinien", "Australia": "Australien", "Brazil": "Brasilien", "Canada": "Kanada", "Chile": "Chile", "Colombia": "Kolumbien", "Croatia": "Kroatien", "Denmark": "Dänemark", "Ecuador": "Ecuador", "Finland": "Finnland", "France": "Frankreich", "Germany": "Deutschland", "Italy": "Italien", "Japan": "Japan", "Mexico": "Mexiko", "Monaco": "Monaco", "Netherlands": "Niederlande", "Peru": "Peru", "Slovakia": "Slovakei", "Spain": "Spanien", "Sweden": "Schweden", "Switzerland": "Schweiz", "UK": "Vereinigtes Königreich, Großbritannien", "USA": "Vereinigte Staaten von Amerika", "Wales": "Vereinigtes Königreich, Großbritannien"}
 DEBUG = False 
 
-class AddressItem:
+class AddressItem(DataItem):
     def __init__(self, fieldPath: str, operand: str):
-        self.fieldPath = fieldPath
-        self.operand = operand.strip()
+        super().__init__(fieldPath, operand)
 
 
     def __str__(self):
         return f'{self.fieldPath}: {self.operand}|'
 
-class SchemaItem:
-    def __init__(self, csvField: str, fieldPath: str, testFunction=None):
-        self.fieldPath = fieldPath
-        self.csvField = csvField
-        self.testFunction = testFunction
 
 def fix_forename(addressList: List[AddressItem], surnameFieldName='AdrSurNameTxt'):
     lastItem = addressList.pop()

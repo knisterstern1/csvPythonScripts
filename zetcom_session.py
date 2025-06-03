@@ -32,6 +32,21 @@ import lxml.etree as LET
 
 DEBUG = False 
 
+class DataItem:
+    def __init__(self, fieldPath: str, operand: str):
+        self.fieldPath = fieldPath
+        self.operand = operand.strip()
+
+
+    def __str__(self):
+        return f'{self.fieldPath}: {self.operand}|'
+
+class SchemaItem:
+    def __init__(self, csvField: str, fieldPath: str, testFunction=None):
+        self.fieldPath = fieldPath
+        self.csvField = csvField
+        self.testFunction = testFunction
+
 class ZetcomSession:
     """A zetcom session class.
     """
