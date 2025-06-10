@@ -54,11 +54,21 @@ class Artist:
     </application>'
     def __init__(self, input_name: str, zsession: zetcom_session.ZetcomSession):
         self.input_name = input_name
-        self.name = self._init_name())
+        self.name = self._init_name()
         self.dates = []
         self.zsession = zsession
         self.id = None
         self._update_id()
+
+    def livedBefore(self) ->str:
+        if len(self.dates) > 0:
+            return self.dates[0]
+        return ''
+
+    def livedAfter(self) ->str:
+        if len(self.dates) > 0:
+            return self.dates[-1]
+        return ''
 
     def _init_name(self) -> str:
         return self.input_name.strip() 
@@ -86,7 +96,21 @@ class Artist:
             date_group = date.match(dateStr).groups()
             self.dates.append(date_group[1])
             if date_group[2] is not None:
-                print(date_group[2])
+                second_date = date_group[2][1:]
+                self.dates.append(second_date)
+        elif century.match(dateStr):
+            date_group = century.match(dateStr).groups()
+            century_years = (int(date_group[1]) -1)*100
+            years = 50
+            if date_group[0] is not None and re.match(r'(?i)early', date_group[0]):
+                years = 25
+            elif date_group[0] is not None and re.match(r'(?i)late', date_group[0]):
+                years = 75
+            self.dates.append(str(century_years + years))
+        self.dates.sort()
+
+
+
 
 class ZetcomArtistUpdate:
     """This class can be used to update address
@@ -119,8 +143,9 @@ class ZetcomArtistUpdate:
                     if currentArtist.id is None:
                         self.process_getty(currentArtist)
                     currentArtist = Artist(name, self.zsession)
-                elif currentArtist.id is None:
-                    currentArtist.addDate(row['Date'])
+                currentArtist.addDate(row['Date'])
+            if currentArtist.id is None:
+                self.process_getty(currentArtist)
         return 0
 
 
