@@ -45,10 +45,9 @@ class ZetcomArtistUpdate:
     """
     OUTPUT_SCHEMA: List[SchemaItem] = [ SchemaItem('Nachname', 'surename'), SchemaItem('Vorname','forename'),\
             SchemaItem('Daten1_Datum', 'birth'),SchemaItem('Daten2_Datum','death'),SchemaItem('Geschlecht','gender')]
+    EXISTING_SCHEMA: List[SchemaItem] = [ SchemaItem('ID','id'), SchemaItem('Person','name')]
 
-    def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss',csv_file='output_artist.csv', existing='existing_artist.csv'): 
-        self.csv_file = csv_file
-        self.existing = existing
+    def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
         self.zsession = zetcom_session.ZetcomSession(username, server)
         self.zsession.open()
         self.getty = Getty()
@@ -56,12 +55,15 @@ class ZetcomArtistUpdate:
     def close(self):
         self.zsession.close()
 
-    def process_getty(self, artist: Artist):
-        getty.query_artist(artist)
+    def process_getty(self, artist: Artist, new_artists: List[Artist]):
+        self.getty.query_artist(artist)
+        new_artists.append(artist)
+        print(f'Getty update: {artist.__dict__}')
 
-    def process_file(self, csvFile: str, targetFile='') ->int:
+    def process_file(self, csvFile: str, output_file='', existing_out='') ->int:
         new_artists: List[Artist]  = []
         existing_artists: List[Artist] = []
+        unknown_artists: List[Artist] = []
         with open(csvFile, newline='') as openFile: 
             reader = csv.DictReader(openFile)
             unkown = 'Unknown artist'
@@ -73,22 +75,26 @@ class ZetcomArtistUpdate:
                     currentArtist = Artist(name, self.zsession)
                 elif currentArtist.input_name != name:
                     if currentArtist.id is None:
-                        self.process_getty(currentArtist)
-                        new_artists.append(currentArtist)
+                        self.process_getty(currentArtist, new_artists)
                     else:
                         existing_artists.append(currentArtist)
+                        print(f'Exists: {currentArtist.__dict__}')
                     currentArtist = Artist(name, self.zsession)
                 currentArtist.addDate(row['Date'])
             if currentArtist.id is None:
-                self.process_getty(currentArtist)
-                new_artists.append(currentArtist)
+                self.process_getty(currentArtist, new_artists)
             else:
                 existing_artists.append(currentArtist)
-        if len(new_artists) > 0:
-            self.write_artists(new_artists, self.csvFile, self.OUTPUT_SCHEMA)
+                print(f'Exists: {currentArtist.__dict__}')
+        if len(new_artists) > 0 and output_file != '':
+            self.write_artists(new_artists, output_file, self.OUTPUT_SCHEMA, unknown_artists)
+        if len(existing_artists) > 0 and existing_out != '':
+            self.write_artists(existing_artists, existing_out, self.EXISTING_SCHEMA)
+        if len(unknown_artists) > 0:
+            self.write_artists(unknown_artists, 'unknown_artists.csv', [SchemaItem('Name','name')])
         return 0
 
-    def write_artists(self, artists: List[Artist], target_file: str, schema: List[SchemaItem]):
+    def write_artists(self, artists: List[Artist], target_file: str, schema: List[SchemaItem], unknown=None):
         """Write data to csv file
         """
         with open(target_file, 'w', newline='') as writeFile:
@@ -96,7 +102,13 @@ class ZetcomArtistUpdate:
             writer = csv.DictWriter(writeFile, fieldnames=fieldnames)
             writer.writeheader()
             for artist in artists:
-                writer.writerow(artist.asrow(schema))  
+                row = artist.asrow(schema)
+                if len(row.keys()):
+                    writer.writerow(row)  
+                elif unknown is not None:
+                    print(f'Unknown artists: {artist.__dict__}')
+                    unknown.append(artist)
+
 
 def usage():
     """prints information on how to use the script
@@ -110,10 +122,11 @@ def main(argv):
 
         OPTIONS:
         -h|--help                      show help
+        -e|--existing-out              output csv file for existing ids
         -f|--file                      input csv file 
         -o|--output                    output csv file
         -s|--server + mplus:           provide mplus address
-        -u|--user:                     provide username as email address
+        -u|--user:                     provide username 
     
         :return: exit code (int)
     """
@@ -122,8 +135,9 @@ def main(argv):
     xml_file = ''
     csv_file = ''
     output_file = ''
+    existing_out = ''
     try:
-        opts, args = getopt.getopt(argv, "hf:o:s:u:x:", ["help", "file=","output=","server=", "user=", "xml="])
+        opts, args = getopt.getopt(argv, "he:f:o:s:u:x:", ["help", "existing-out=","file=","output=","server=", "user=", "xml="])
     except getopt.GetoptError:
         usage()
         return 2
@@ -131,6 +145,8 @@ def main(argv):
         if opt in ('-h', '--help'):
             usage()
             return 0
+        elif opt in ('-e', '--existing-out'):
+            existing_out = arg
         elif opt in ('-f', '--file'):
             csv_file = arg
         elif opt in ('-o', '--output'):
@@ -143,10 +159,12 @@ def main(argv):
             xml_file = arg
     if csv_file != '':
         output_file = output_file if output_file != '' else 'artist_output_' + csv_file
-        artist = ZetcomArtistUpdate([], username, zetcom_server)
+        artist = ZetcomArtistUpdate(username, zetcom_server)
         artist.process_file(csv_file, output_file)
         artist.close()
         #return process_file(csv_file)
+    else:
+        usage()
     return 0 
 
 
