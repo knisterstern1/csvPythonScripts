@@ -25,10 +25,12 @@ class TestGetty(unittest.TestCase):
         artist.addDate('c. 1923-1939')
         artist.addDate('Not dated')
         artist.addDate('1908')
-        self.assertEqual(artist.livedBefore(), '1908')
-        self.assertEqual(artist.livedAfter(), '1939')
+        artist.lived()
+        self.assertEqual(artist.livedBefore, '1908')
+        self.assertEqual(artist.livedAfter, '1939')
         artist.addDate('early 20th century')
-        self.assertEqual(artist.livedAfter(), '1939')
+        artist.lived()
+        self.assertEqual(artist.livedAfter, '1939')
         zsession.close()
 
     def test_process_qetty(self):

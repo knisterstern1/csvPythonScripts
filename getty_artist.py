@@ -55,7 +55,7 @@ class Artist:
     </application>'
     def __init__(self, input_name: str, zsession: zetcom_session.ZetcomSession, init_id=True):
         self.input_name = input_name
-        self.name = self._init_name()
+        self.name = self.parse_name(input_name)
         self.forename = ''
         self.surename = ''
         self.ulan = ''
@@ -63,6 +63,8 @@ class Artist:
         self.birth = ''
         self.death = ''
         self.dates = []
+        self.livedBefore = ''
+        self.livedAfter = ''
         self.nationalities = []
         self.zsession = zsession
         self.id = None
@@ -78,18 +80,25 @@ class Artist:
                 output[item.csvField] = self.__dict__[item.fieldPath]
         return output
 
-    def livedBefore(self) ->str:
+    def lived(self):
+        """Set the live span inforamtion
+        """
+        self.livedBefore = self.updateLivedBefore()
+        self.livedAfter = self.updateLivedAfter()
+
+    def updateLivedBefore(self) ->str:
         if len(self.dates) > 0:
             return self.dates[0]
         return ''
 
-    def livedAfter(self) ->str:
+    def updateLivedAfter(self) ->str:
         if len(self.dates) > 0:
             return self.dates[-1]
         return ''
 
-    def _init_name(self) -> str:
-        name = self.input_name.replace('"','').strip()
+    @classmethod
+    def parse_name(cls, input_name) -> str:
+        name = input_name.replace('"','').strip()
         if '(' in name:
             name = name.split('(')[0].strip()
         return name 
@@ -158,8 +167,9 @@ select distinct * {
 
     def query_artist(self, artist: Artist):
         query = self.query.replace('#NAME#', artist.name)
+        artist.lived()
         if artist.livedBefore != '':
-            query = query.replace('#filter', 'filter').replace('#LIVEDBEFORE#', artist.livedBefore()).replace('#LIVEDAFTER#', artist.livedAfter())
+            query = query.replace('#filter', 'filter').replace('#LIVEDBEFORE#', artist.livedBefore).replace('#LIVEDAFTER#', artist.livedAfter)
         self.sparql.setQuery(query)
         try:
             response = self.sparql.queryAndConvert()

@@ -60,43 +60,41 @@ class ZetcomArtistUpdate:
         self.getty.query_artist(artist)
         if len([ item for item in new_artists if item.name == artist.name]) == 0:
             new_artists.append(artist)
-        print(f'Getty update: {artist.__dict__}')
+        print(f'Getty update: {artist.name}')
 
     def process_file(self, csvFile: str, output_file='', existing_out='') ->int:
         new_artists: List[Artist]  = []
         existing_artists: List[Artist] = []
         unknown_artists: List[Artist] = []
-        artist_names = []
+        artists = {}
         with open(csvFile, newline='') as openFile: 
             reader = csv.DictReader(openFile)
             unkown = 'Unknown'
             currentArtist: Artist = None
             counter = 0
+            print('Creating dictionary ...')
             for row in reader:
                 name = row['Artist'].strip() if not row['Artist'].startswith(unkown) else 'unbekannt'
-                if name not in artist_names:
-                    if currentArtist is None:
-                        currentArtist = Artist(name, self.zsession)
-                    elif currentArtist.input_name != name:
-                        if currentArtist.id is None:
-                            self.process_getty(currentArtist, new_artists)
-                        else:
-                            existing_artists.append(currentArtist)
-                            print(f'Exists: {currentArtist.__dict__}')
-                        artist_names.append(currentArtist.input_name)
-                        currentArtist = Artist(name, self.zsession)
-                    currentArtist.addDate(row['Date'])
-            if currentArtist.id is None:
-                self.process_getty(currentArtist, new_artists)
-            else:
-                existing_artists.append(currentArtist)
-                print(f'Exists: {currentArtist.__dict__}')
+                key = Artist.parse_name(name)
+                if key not in artists.keys():
+                    artists[key] = Artist(name, self.zsession)
+                    artists[key].addDate(row['Date'])
+                else:
+                    artists[key].addDate(row['Date'])
+            print('Processing artists ...')
+            for key in sorted(artists.keys()):
+                currentArtist = artists[key]
+                if currentArtist.id is None:
+                    self.process_getty(currentArtist, new_artists)
+                else:
+                    existing_artists.append(currentArtist)
+                    print(f'Exists: {currentArtist.name}')
         if len(new_artists) > 0 and output_file != '':
             self.write_artists(new_artists, output_file, self.OUTPUT_SCHEMA, unknown_artists)
         if len(existing_artists) > 0 and existing_out != '':
             self.write_artists(existing_artists, existing_out, self.EXISTING_SCHEMA)
         if len(unknown_artists) > 0:
-            self.write_artists(unknown_artists, 'unknown_artists.csv', [SchemaItem('Name','name')])
+            self.write_artists(unknown_artists, 'unknown_artists.csv', [SchemaItem('Name','name'), SchemaItem('Lebte vor', 'livedBefore'), SchemaItem('Lebte nach', 'livedAfter')])
         return 0
 
     def write_artists(self, artists: List[Artist], target_file: str, schema: List[SchemaItem], unknown=None):
@@ -111,7 +109,8 @@ class ZetcomArtistUpdate:
                 if len(row.keys()):
                     writer.writerow(row)  
                 elif unknown is not None:
-                    print(f'Unknown artists: {artist.__dict__}')
+                    print(f'Unknown artist: {artist.name}')
+                    artist.lived()
                     unknown.append(artist)
 
 
@@ -165,7 +164,7 @@ def main(argv):
     if csv_file != '':
         output_file = output_file if output_file != '' else 'artist_output_' + csv_file
         artist = ZetcomArtistUpdate(username, zetcom_server)
-        artist.process_file(csv_file, output_file)
+        artist.process_file(csv_file, output_file, existing_out)
         artist.close()
         #return process_file(csv_file)
     else:
