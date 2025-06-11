@@ -44,7 +44,8 @@ class ZetcomArtistUpdate:
     """This class can be used to update artists 
     """
     OUTPUT_SCHEMA: List[SchemaItem] = [ SchemaItem('Nachname', 'surename'), SchemaItem('Vorname','forename'),\
-            SchemaItem('Daten1_Datum', 'birth'),SchemaItem('Daten2_Datum','death'),SchemaItem('Geschlecht','gender')]
+            SchemaItem('Daten1_Datum', 'birth'),SchemaItem('Daten2_Datum','death'),SchemaItem('Geschlecht','gender'),\
+            SchemaItem('ULAN', 'ulan')]
     EXISTING_SCHEMA: List[SchemaItem] = [ SchemaItem('ID','id'), SchemaItem('Person','name')]
 
     def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
@@ -57,30 +58,34 @@ class ZetcomArtistUpdate:
 
     def process_getty(self, artist: Artist, new_artists: List[Artist]):
         self.getty.query_artist(artist)
-        new_artists.append(artist)
+        if len([ item for item in new_artists if item.name == artist.name]) == 0:
+            new_artists.append(artist)
         print(f'Getty update: {artist.__dict__}')
 
     def process_file(self, csvFile: str, output_file='', existing_out='') ->int:
         new_artists: List[Artist]  = []
         existing_artists: List[Artist] = []
         unknown_artists: List[Artist] = []
+        artist_names = []
         with open(csvFile, newline='') as openFile: 
             reader = csv.DictReader(openFile)
-            unkown = 'Unknown artist'
+            unkown = 'Unknown'
             currentArtist: Artist = None
             counter = 0
             for row in reader:
                 name = row['Artist'].strip() if not row['Artist'].startswith(unkown) else 'unbekannt'
-                if currentArtist is None:
-                    currentArtist = Artist(name, self.zsession)
-                elif currentArtist.input_name != name:
-                    if currentArtist.id is None:
-                        self.process_getty(currentArtist, new_artists)
-                    else:
-                        existing_artists.append(currentArtist)
-                        print(f'Exists: {currentArtist.__dict__}')
-                    currentArtist = Artist(name, self.zsession)
-                currentArtist.addDate(row['Date'])
+                if name not in artist_names:
+                    if currentArtist is None:
+                        currentArtist = Artist(name, self.zsession)
+                    elif currentArtist.input_name != name:
+                        if currentArtist.id is None:
+                            self.process_getty(currentArtist, new_artists)
+                        else:
+                            existing_artists.append(currentArtist)
+                            print(f'Exists: {currentArtist.__dict__}')
+                        artist_names.append(currentArtist.input_name)
+                        currentArtist = Artist(name, self.zsession)
+                    currentArtist.addDate(row['Date'])
             if currentArtist.id is None:
                 self.process_getty(currentArtist, new_artists)
             else:

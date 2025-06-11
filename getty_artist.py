@@ -89,7 +89,10 @@ class Artist:
         return ''
 
     def _init_name(self) -> str:
-        return self.input_name.strip() 
+        name = self.input_name.replace('"','').strip()
+        if '(' in name:
+            name = name.split('(')[0].strip()
+        return name 
 
     def _update_id(self):
         """Get Artist id or None
