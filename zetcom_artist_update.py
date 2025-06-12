@@ -34,6 +34,7 @@ from xml.etree import ElementTree
 import lxml.etree as LET
 import zetcom_session
 from getty_artist import Artist, Getty
+from wikidata_artist import Wikidata
 from zetcom_session import DataItem, SchemaItem
 from typing import List
 
@@ -52,15 +53,18 @@ class ZetcomArtistUpdate:
         self.zsession = zetcom_session.ZetcomSession(username, server)
         self.zsession.open()
         self.getty = Getty()
+        self.wikidata = Wikidata()
        
     def close(self):
         self.zsession.close()
 
     def process_getty(self, artist: Artist, new_artists: List[Artist]):
+        print(f'Getty update: {artist.name}')
         self.getty.query_artist(artist)
+        print(f'Wikidata update: {artist.name}')
+        self.wikidata.query_artist(artist)
         if len([ item for item in new_artists if item.name == artist.name]) == 0:
             new_artists.append(artist)
-        print(f'Getty update: {artist.name}')
 
     def process_file(self, csvFile: str, output_file='', existing_out='') ->int:
         new_artists: List[Artist]  = []
@@ -112,7 +116,6 @@ class ZetcomArtistUpdate:
                     print(f'Unknown artist: {artist.name}')
                     artist.lived()
                     unknown.append(artist)
-
 
 def usage():
     """prints information on how to use the script

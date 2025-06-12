@@ -59,9 +59,12 @@ class Artist:
         self.forename = ''
         self.surename = ''
         self.ulan = ''
+        self.wikidata = ''
         self.gender = ''
         self.birth = ''
         self.death = ''
+        self.placeOfBirth = ''
+        self.placeOfDeath = ''
         self.dates = []
         self.livedBefore = ''
         self.livedAfter = ''
@@ -160,8 +163,8 @@ select distinct * {
 }
     """
 
-    def __init__(self, getty='https://vocab.getty.edu/sparql.json'): 
-        self.sparql = SPARQLWrapper(getty, "")
+    def __init__(self, endpoint='https://vocab.getty.edu/sparql.json'): 
+        self.sparql = SPARQLWrapper(endpoint, "")
         self.sparql.setReturnFormat(JSON)
 
 
