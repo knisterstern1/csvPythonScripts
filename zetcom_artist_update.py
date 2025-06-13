@@ -47,7 +47,7 @@ class ZetcomArtistUpdate:
     """
     OUTPUT_SCHEMA: List[SchemaItem] = [ SchemaItem('Nachname', 'surename'), SchemaItem('Vorname','forename'),\
             SchemaItem('Daten1_Datum', 'birth'),SchemaItem('Daten2_Datum','death'),SchemaItem('Geschlecht','gender'),\
-            SchemaItem('Daten1_Ort','placeOfBirth'),SchemaItem('Daten2_Ort','placeOfDeath'), SchemaItem('Zeitraum','epoche')\
+            SchemaItem('Daten1_Ort','placeOfBirth'),SchemaItem('Daten2_Ort','placeOfDeath'), SchemaItem('Zeitraum','epoche'),\
             SchemaItem('Website', 'link')]
     EXISTING_SCHEMA: List[SchemaItem] = [ SchemaItem('ID','id'), SchemaItem('Person','name'), SchemaItem('Input','input_name')]
 
@@ -60,13 +60,15 @@ class ZetcomArtistUpdate:
     def close(self):
         self.zsession.close()
 
-    def process_getty(self, artist: Artist, new_artists: List[Artist]):
+    def process_api(self, artist: Artist, new_artists: List[Artist]) ->int:
+        exit_code = 0
         print(f'Getty update: {artist.name}')
-        self.getty.query_artist(artist)
+        exit_code = self.getty.query_artist(artist)
         print(f'Wikidata update: {artist.name}')
-        self.wikidata.query_artist(artist)
+        exit_code = self.wikidata.query_artist(artist)
         if len([ item for item in new_artists if item.name == artist.name]) == 0:
             new_artists.append(artist)
+        return exit_code
 
     def process_file(self, csvFile: str, output_file='', existing_out='') ->int:
         new_artists: List[Artist]  = []
@@ -81,17 +83,20 @@ class ZetcomArtistUpdate:
             print('Creating dictionary ...')
             for row in reader:
                 name = row['Artist'].strip() if not row['Artist'].startswith(unkown) else 'unbekannt'
-                key = Artist.parse_name(name)
-                if key not in artists.keys():
-                    artists[key] = Artist(name, self.zsession)
-                    artists[key].addDate(row['Date'])
-                else:
-                    artists[key].addDate(row['Date'])
+                for input_name in name.split(' and '):
+                    key = Artist.parse_name(input_name)
+                    if key not in artists.keys():
+                        artists[key] = Artist(input_name, self.zsession)
+                        artists[key].addDate(row['Date'])
+                    else:
+                        artists[key].addDate(row['Date'])
             print('Processing artists ...')
             for key in sorted(artists.keys()):
                 currentArtist = artists[key]
                 if currentArtist.id is None:
-                    self.process_getty(currentArtist, new_artists)
+                    exit_code = self.process_api(currentArtist, new_artists)
+                    if exit_code == 429:
+                        break
                 else:
                     existing_artists.append(currentArtist)
                     print(f'Exists: {currentArtist.name}')
@@ -116,7 +121,7 @@ class ZetcomArtistUpdate:
                     writer.writerow(row)  
                 elif unknown is not None:
                     print(f'Unknown artist: {artist.name}')
-                    artist.lived()
+                    artist.update()
                     unknown.append(artist)
 
 def usage():

@@ -130,8 +130,9 @@ class Wikidata(ArtistAPI):
     def _process_exception(self, e: Exception, artist: Artist) ->int:
         """Process exception 
         """
-        print(Fore.RED + f'With artist {artist.name} there was a exception from getty: {e}!' + Style.RESET_ALL)
-        if '429' in e and not artist.query_failed:
+        status = '429' in e and not artist.query_failed
+        print(Fore.RED + f'With artist {artist.name} there was a exception from getty: {e}! {status}' + Style.RESET_ALL)
+        if status:
             sleep = 70
             print(Fore.BLUE + f'Query the api again for  in {sleep}s ...' + Style.RESET_ALL)
             artist.query_failed = True
