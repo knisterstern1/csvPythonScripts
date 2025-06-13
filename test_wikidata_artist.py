@@ -23,9 +23,14 @@ class TestWikidata(unittest.TestCase):
         self.assertEqual(artist.death, '31.10.1942')
         row = artist.asrow([ SchemaItem('forename', 'forename'), SchemaItem('surename','surename')])
         self.assertEqual(row['forename'], 'Elisar von')
+
+    def test_process_response(self):
         artist = Artist('Adhemar Gonzaga', None, False)
-        artist.addDate('1923-1939')
+        response = {'head': {'vars': ['item', 'itemLabel', 'birth', 'VornameLabel', 'FamiliennameLabel', 'death', 'genderLabel', 'placeOfBirthLabel', 'placeOfDeathLabel']}, 'results': {'bindings': [{'item': {'type': 'uri', 'value': 'http://www.wikidata.org/entity/Q9582671'}, 'birth': {'datatype': 'http://www.w3.org/2001/XMLSchema#dateTime', 'type': 'literal', 'value': '1901-08-26T00:00:00Z'}, 'death': {'datatype': 'http://www.w3.org/2001/XMLSchema#dateTime', 'type': 'literal', 'value': '1978-01-29T00:00:00Z'}, 'itemLabel': {'xml:lang': 'en', 'type': 'literal', 'value': 'Adhemar Gonzaga'}, 'VornameLabel': {'xml:lang': 'en', 'type': 'literal', 'value': 'Ademar'}, 'genderLabel': {'xml:lang': 'en', 'type': 'literal', 'value': 'male'}, 'placeOfBirthLabel': {'xml:lang': 'en', 'type': 'literal', 'value': 'Rio de Janeiro'}, 'placeOfDeathLabel': {'xml:lang': 'en', 'type': 'literal', 'value': 'Rio de Janeiro'}}]}}
+        wikidata = Wikidata()
+        wikidata._process_response(response, artist)
         wikidata.query_artist(artist)
+        self.assertEqual(artist.surename, 'Gonzaga')
 
 if __name__ == "__main__":
     unittest.main()

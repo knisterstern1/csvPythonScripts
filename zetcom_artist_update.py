@@ -33,7 +33,8 @@ import xml.dom.minidom as MD
 from xml.etree import ElementTree
 import lxml.etree as LET
 import zetcom_session
-from getty_artist import Artist, Getty
+from artist_api import Artist
+from getty_artist import Getty
 from wikidata_artist import Wikidata
 from zetcom_session import DataItem, SchemaItem
 from typing import List
@@ -46,8 +47,9 @@ class ZetcomArtistUpdate:
     """
     OUTPUT_SCHEMA: List[SchemaItem] = [ SchemaItem('Nachname', 'surename'), SchemaItem('Vorname','forename'),\
             SchemaItem('Daten1_Datum', 'birth'),SchemaItem('Daten2_Datum','death'),SchemaItem('Geschlecht','gender'),\
-            SchemaItem('ULAN', 'ulan')]
-    EXISTING_SCHEMA: List[SchemaItem] = [ SchemaItem('ID','id'), SchemaItem('Person','name')]
+            SchemaItem('Daten1_Ort','placeOfBirth'),SchemaItem('Daten2_Ort','placeOfDeath'), SchemaItem('Zeitraum','epoche')\
+            SchemaItem('Website', 'link')]
+    EXISTING_SCHEMA: List[SchemaItem] = [ SchemaItem('ID','id'), SchemaItem('Person','name'), SchemaItem('Input','input_name')]
 
     def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
         self.zsession = zetcom_session.ZetcomSession(username, server)
