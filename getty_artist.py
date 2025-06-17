@@ -35,7 +35,7 @@ from xml.etree import ElementTree
 import lxml.etree as LET
 from artist_api import Artist, ArtistAPI
 import zetcom_session
-from zetcom_session import DataItem, SchemaItem
+from zetcom_session import DataItem, SchemaItem, get_mplus_gender
 from typing import List
 
 DEBUG = False 
@@ -87,7 +87,7 @@ class Getty(ArtistAPI):
             else:
                 artist.surename = label
             if "gender" in artist_data.keys() and artist_data["gender"]["value"] in self.gender_dict.keys():
-                artist.gender = self.gender_dict[artist_data["gender"]["value"]] 
+                artist.gender = get_mplus_gender(artist_data["gender"]["value"])
             if "birth" in artist_data.keys():
                 artist.birth = artist_data["birth"]["value"]
             if "death" in artist_data.keys():
@@ -96,5 +96,18 @@ class Getty(ArtistAPI):
     def _process_exception(self, e: Exception, artist: Artist) ->int:
         """Process exception 
         """
-        print(Fore.RED + f'With artist {artist.name} there was a exception from getty: {e.message}!' + Style.RESET_ALL)
-        return 1
+        status = '403' in e.message and not artist.query_failed
+        print(e.message)
+        print(Fore.RED + f'With artist {artist.name} there was a exception from getty: {e.message}! {status}' + Style.RESET_ALL)
+        if status:
+            sleep = 10
+            print(Fore.BLUE + f'Query the api again for  in {sleep}s ...' + Style.RESET_ALL)
+            artist.query_failed = True
+            for i in reversed(range(0, sleep)):
+                print(Fore.MAGENTA + f"{i}s" + Style.RESET_ALL, end="\r", flush=True)
+                sleep(1)
+            return self.query_artist(artist)
+        elif artist.query_failed:
+            return 403
+        else:
+            return 1

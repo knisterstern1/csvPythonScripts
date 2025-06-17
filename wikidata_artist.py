@@ -36,7 +36,7 @@ import lxml.etree as LET
 import time
 from artist_api import Artist, ArtistAPI
 import zetcom_session
-from zetcom_session import DataItem, SchemaItem
+from zetcom_session import DataItem, SchemaItem, get_mplus_gender
 from typing import List
 
 DEBUG = False 
@@ -49,7 +49,7 @@ SELECT DISTINCT ?item ?itemLabel ?birth ?VornameLabel ?FamiliennameLabel ?death 
       mwapi:srsearch "'#NAME#' haswbstatement:P31=Q5".
     ?item wikibase:apiOutputItem mwapi:title.
   }
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],de,en". }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
   OPTIONAL { ?item wdt:P735 ?Vorname. }
   OPTIONAL { ?item wdt:P734 ?Familienname. }
   #VALUES ?livedBefore {"+#LIVEDBEFORE#-01-01"^^xsd:dateTime} 
@@ -93,21 +93,33 @@ class Wikidata(ArtistAPI):
             query = query.replace('#filter', 'filter').replace('#VALUES','VALUES').replace('#LIVEDBEFORE#', artist.livedBefore).replace('#LIVEDAFTER#', artist.livedAfter)
         return query
 
+    def _find_artist_in_response(self, result_dicts: List[dict], artist: Artist) ->dict:
+        """Return artist data that comes closest to artist input name.
+        """
+        if len(result_dicts) == 1:
+            return result_dicts[0]
+        if len([ item for item in result_dicts if item["itemLabel"]["value"] == artist.name ]) > 0:
+            return [ item for item in result_dicts if item["itemLabel"]["value"] == artist.name ][0]
+        if len([ item for item in result_dicts if item["itemLabel"]["value"].lower() == artist.name.lower() ]) > 0:
+            return [ item for item in result_dicts if item["itemLabel"]["value"].lower() == artist.name.lower() ][0]
+        return result_dicts[0]
+
     def _process_response(self, response: dict, artist: Artist):
         """Process result 
         """
         if len(response["results"]["bindings"]) > 0:
-            artist_data = response["results"]["bindings"][0]
+            artist_data = self._find_artist_in_response(response["results"]["bindings"], artist)
             artist.wikidata = artist_data["item"]["value"]
             label = artist_data["itemLabel"]["value"]
             alt_forename = artist.forename 
-            if "VornameLabel" in artist_data.keys():
+            qwiki_code = re.compile('Q[0-9]+')
+            if "VornameLabel" in artist_data.keys() and not qwiki_code.match(artist_data["VornameLabel"]["value"]):
                 if artist.forename != '':
                     artist.forename = alt_forename
                     alt_forename = artist_data["VornameLabel"]["value"]
                 else:
                     artist.forename = artist_data["VornameLabel"]["value"]
-            if "FamiliennameLabel" in artist_data.keys():
+            if "FamiliennameLabel" in artist_data.keys() and not qwiki_code.match(artist_data["FamiliennameLabel"]["value"]):
                 artist.surename = artist_data["FamiliennameLabel"]["value"]
             elif len(label.split(artist.forename + ' ')) > 1 or len(label.split(alt_forename + ' ')) > 1:
                 split_str = artist.forename \
@@ -116,22 +128,22 @@ class Wikidata(ArtistAPI):
                 artist.surename = ' '.join(label.split(split_str + ' ')[1:])
                 if artist.forename == '':
                     artist.forename = label.split(' ')[0]
-            if "genderLabel" in artist_data.keys():
-                artist.gender = artist_data["genderLabel"]["value"] 
+            if "genderLabel" in artist_data.keys() and not qwiki_code.match(artist_data["genderLabel"]["value"]):
+                artist.gender = get_mplus_gender(artist_data["genderLabel"]["value"])
             if "birth" in artist_data.keys():
                 artist.birth = self._parse_date(artist_data["birth"]["value"])
             if "death" in artist_data.keys():
                 artist.death = self._parse_date(artist_data["death"]["value"])
-            if "placeOfBirthLabel" in artist_data.keys():
+            if "placeOfBirthLabel" in artist_data.keys() and not qwiki_code.match(artist_data["placeOfBirthLabel"]["value"]) :
                 artist.placeOfBirth = self._parse_date(artist_data["placeOfBirthLabel"]["value"])
-            if "placeOfDeathLabel" in artist_data.keys():
+            if "placeOfDeathLabel" in artist_data.keys() and not qwiki_code.match(artist_data["placeOfDeathLabel"]["value"]):
                 artist.placeOfDeath = self._parse_date(artist_data["placeOfDeathLabel"]["value"])
 
     def _process_exception(self, e: Exception, artist: Artist) ->int:
         """Process exception 
         """
-        status = '429' in e and not artist.query_failed
-        print(Fore.RED + f'With artist {artist.name} there was a exception from getty: {e}! {status}' + Style.RESET_ALL)
+        status = len([i for i in e.args if '429' in i]) > 0 and not artist.query_failed
+        print(Fore.RED + f'With artist {artist.name} there was a exception from wikidata: {e}! {status}' + Style.RESET_ALL)
         if status:
             sleep = 70
             print(Fore.BLUE + f'Query the api again for  in {sleep}s ...' + Style.RESET_ALL)

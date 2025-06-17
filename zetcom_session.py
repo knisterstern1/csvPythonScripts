@@ -31,6 +31,21 @@ from xml.etree import ElementTree
 import lxml.etree as LET
 
 DEBUG = False 
+GENDER_DICT = { 'male': 'männlich',\
+                'female': 'weiblich',\
+                'divers': 'divers',\
+                'non-binary': 'divers',\
+                'trans woman': 'weiblich',\
+                'trans man': 'männlich',\
+                'trans male': 'männlich',\
+                'trans female': 'weiblich'}
+
+def get_mplus_gender(gender_in: str) ->str:
+    """Return german gender from mplus voc
+    """
+    if gender_in in GENDER_DICT.keys():
+        return GENDER_DICT[gender_in]
+    return gender_in
 
 class DataItem:
     def __init__(self, fieldPath: str, operand: str):

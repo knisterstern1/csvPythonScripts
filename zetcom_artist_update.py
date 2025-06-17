@@ -48,7 +48,7 @@ class ZetcomArtistUpdate:
     OUTPUT_SCHEMA: List[SchemaItem] = [ SchemaItem('Nachname', 'surename'), SchemaItem('Vorname','forename'),\
             SchemaItem('Daten1_Datum', 'birth'),SchemaItem('Daten2_Datum','death'),SchemaItem('Geschlecht','gender'),\
             SchemaItem('Daten1_Ort','placeOfBirth'),SchemaItem('Daten2_Ort','placeOfDeath'), SchemaItem('Zeitraum','epoche'),\
-            SchemaItem('Website', 'link')]
+            SchemaItem('Input','input_name'),SchemaItem('Website', 'link')]
     EXISTING_SCHEMA: List[SchemaItem] = [ SchemaItem('ID','id'), SchemaItem('Person','name'), SchemaItem('Input','input_name')]
 
     def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
@@ -173,6 +173,7 @@ def main(argv):
             xml_file = arg
     if csv_file != '':
         output_file = output_file if output_file != '' else 'artist_output_' + csv_file
+        existing_out = existing_out if existing_out != '' else 'existing_' + zetcom_server.split('//')[1].replace('.','-') + '.csv'
         artist = ZetcomArtistUpdate(username, zetcom_server)
         artist.process_file(csv_file, output_file, existing_out)
         artist.close()

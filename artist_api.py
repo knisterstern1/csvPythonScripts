@@ -103,6 +103,7 @@ class Artist:
         self.livedBefore = self.updateLivedBefore()
         self.livedAfter = self.updateLivedAfter()
         self.link = self.wikidata if self.wikidata != '' else self.ulan
+        self._set_epoche()
 
     def updateLivedBefore(self) ->str:
         if len(self.dates) > 0:
@@ -189,6 +190,7 @@ class ArtistAPI(ABC):
         try:
             response = self.sparql.queryAndConvert()
             self._process_response(response, artist)
+            artist.query_failed = False
             return 0
         except Exception as e:
             self._process_exception(e, artist)
