@@ -29,6 +29,7 @@ import urllib.parse
 import xml.dom.minidom as MD
 from xml.etree import ElementTree
 import lxml.etree as LET
+from typing import List
 
 DEBUG = False 
 GENDER_DICT = { 'male': 'männlich',\
@@ -70,6 +71,16 @@ class ZetcomSession:
         self.username = username
         self.session = requests.Session()
         self.key = None
+
+    def get_json(self, url: str) ->List[dict]:
+        """GET a json and return a List of dictonaries 
+        """
+        get_url = self.server + url
+        response = self.session.get(get_url)
+        if response.status_code == 200:
+           return json.loads(response.content) 
+        else:
+            raise Exception(response.status_code)
 
     def get(self, url: str) -> LET:
         """GET a xml response

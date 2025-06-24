@@ -11,6 +11,14 @@ class TestZetcomTest(unittest.TestCase):
         self.assertEqual(zsession.username,'SimpleUserTest')
         zsession.close()
 
+    def test_get_json(self):
+        zsession = zetcom_session.ZetcomSession()
+        zsession.open()
+        response = zsession.get_json('/ria-ws/application/module/Object/0054240/export/95025')
+        self.assertTrue(len(response) > 0)
+        self.assertEqual(response[0]["ID"], '54240')
+        zsession.close()
+
     def test_check_get(self):
         zsession = zetcom_session.ZetcomSession()
         zsession.open()
