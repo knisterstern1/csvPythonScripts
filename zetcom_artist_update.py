@@ -77,19 +77,27 @@ class ZetcomArtistUpdate:
         artists = {}
         with open(csvFile, newline='') as openFile: 
             reader = csv.DictReader(openFile)
-            unkown = 'Unknown'
-            currentArtist: Artist = None
-            counter = 0
+            header = list(dict(next(reader)).keys())
             print('Creating dictionary ...')
-            for row in reader:
-                name = row['Artist'].strip() if not row['Artist'].startswith(unkown) else 'unbekannt'
-                for input_name in name.split(' and '):
-                    key = Artist.parse_name(input_name)
-                    if key not in artists.keys():
-                        artists[key] = Artist(input_name, self.zsession)
-                        artists[key].addDate(row['Date'])
-                    else:
-                        artists[key].addDate(row['Date'])
+            if "Name" in header and "Vor" in header and "Nach" in header:
+                for row in reader:
+                    name = row["Name"]
+                    key = Artist.parse_name(name)
+                    artists[key] = Artist(name, self.zsession)
+                    artists[key].addDate(row['Vor'])
+                    artists[key].addDate(row['Nach'])
+            else:
+                unkown = 'Unknown'
+                counter = 0
+                for row in reader:
+                    name = row['Artist'].strip() if not row['Artist'].startswith(unkown) else 'unbekannt'
+                    for input_name in name.split(' and '):
+                        key = Artist.parse_name(input_name)
+                        if key not in artists.keys():
+                            artists[key] = Artist(input_name, self.zsession)
+                            artists[key].addDate(row['Date'])
+                        else:
+                            artists[key].addDate(row['Date'])
             print('Processing artists ...')
             for key in sorted(artists.keys()):
                 currentArtist = artists[key]
@@ -117,7 +125,7 @@ class ZetcomArtistUpdate:
             writer.writeheader()
             for artist in artists:
                 row = artist.asrow(schema)
-                if len(row.keys()):
+                if len([ key for key in row.keys() if key != 'Input' ]) > 0:
                     writer.writerow(row)  
                 elif unknown is not None:
                     print(f'Unknown artist: {artist.name}')
