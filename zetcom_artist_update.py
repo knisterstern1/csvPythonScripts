@@ -48,7 +48,7 @@ class ZetcomArtistUpdate:
     OUTPUT_SCHEMA: List[SchemaItem] = [ SchemaItem('Nachname', 'surename'), SchemaItem('Vorname','forename'),\
             SchemaItem('Daten1_Datum', 'birth'),SchemaItem('Daten2_Datum','death'),SchemaItem('Geschlecht','gender'),\
             SchemaItem('Daten1_Ort','placeOfBirth'),SchemaItem('Daten2_Ort','placeOfDeath'), SchemaItem('Zeitraum','epoche'),\
-            SchemaItem('Input','input_name'),SchemaItem('Website', 'link')]
+            SchemaItem('Lebensdaten','life_data'),SchemaItem('Input','input_name'),SchemaItem('Website', 'link')]
     EXISTING_SCHEMA: List[SchemaItem] = [ SchemaItem('ID','id'), SchemaItem('Person','name'), SchemaItem('Input','input_name')]
 
     def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
@@ -116,6 +116,23 @@ class ZetcomArtistUpdate:
             self.write_artists(unknown_artists, 'unknown_artists.csv', [SchemaItem('Name','name'), SchemaItem('Lebte vor', 'livedBefore'), SchemaItem('Lebte nach', 'livedAfter')])
         return 0
 
+    def update_file(self, csvFile: str) ->int:
+        artists: List[Artist]  = []
+        with open(csvFile, newline='') as openFile: 
+            reader = csv.DictReader(openFile)
+            print('Reading file ...')
+            for row in reader:
+                artist = Artist('', None, False)
+                for schema in self.OUTPUT_SCHEMA:
+                    try:
+                        artist.__dict__[schema.fieldPath] = row[schema.csvField]
+                    except Exception as e:
+                        artist.__dict__[schema.fieldPath] = ''
+                artist.update()
+                artists.append(artist)
+        self.write_artists(artists, csvFile, self.OUTPUT_SCHEMA)
+        return 0
+
     def write_artists(self, artists: List[Artist], target_file: str, schema: List[SchemaItem], unknown=None):
         """Write data to csv file
         """
@@ -147,6 +164,7 @@ def main(argv):
         -e|--existing-out              output csv file for existing ids
         -f|--file                      input csv file 
         -o|--output                    output csv file
+        -r|--refresh                   update csv file with missing data
         -s|--server + mplus:           provide mplus address
         -u|--user:                     provide username 
     
@@ -158,8 +176,9 @@ def main(argv):
     csv_file = ''
     output_file = ''
     existing_out = ''
+    update = False
     try:
-        opts, args = getopt.getopt(argv, "he:f:o:s:u:x:", ["help", "existing-out=","file=","output=","server=", "user=", "xml="])
+        opts, args = getopt.getopt(argv, "he:f:o:rs:u:x:", ["help", "existing-out=","file=","output=","refresh","server=", "user=", "xml="])
     except getopt.GetoptError:
         usage()
         return 2
@@ -171,6 +190,8 @@ def main(argv):
             existing_out = arg
         elif opt in ('-f', '--file'):
             csv_file = arg
+        elif opt in ('-r', '--refresh'):
+            update = True
         elif opt in ('-o', '--output'):
             output_file = arg
         elif opt in ('-s', '--server'):
@@ -180,10 +201,13 @@ def main(argv):
         elif opt in ('-x', '--xml'):
             xml_file = arg
     if csv_file != '':
-        output_file = output_file if output_file != '' else 'artist_output_' + csv_file
-        existing_out = existing_out if existing_out != '' else 'existing_' + zetcom_server.split('//')[1].replace('.','-') + '.csv'
         artist = ZetcomArtistUpdate(username, zetcom_server)
-        artist.process_file(csv_file, output_file, existing_out)
+        if update:
+            artist.update_file(csv_file)
+        else:
+            output_file = output_file if output_file != '' else 'artist_output_' + csv_file
+            existing_out = existing_out if existing_out != '' else 'existing_' + zetcom_server.split('//')[1].replace('.','-') + '.csv'
+            artist.process_file(csv_file, output_file, existing_out)
         artist.close()
         #return process_file(csv_file)
     else:

@@ -1,3 +1,150 @@
-Picturepark ID,BasicInformation.filename,BasicInformation.category.filenameCode,ObjectInformation.objects.objectId
-014fd44e8f7145eba7978933d1acdbe7,kw2d_0012922_2021-11-23_s-001-dw.jpg,2,12922
-0206e1d75bcc4543865807664abdd952,kw2a_0029889_2014-06-17_s-003-dw.jpg,2,29889
+Adresstyp,Institution,Nachname,Vorname,Titel,Nachname2,Vorname2,Titel2,Language,Funktion,E-Mail,E-Mail2,Address,PLZ,Ort,Land
+person,Aberystwyth University School of Art Museum and Galleries,Holland,Neil,,,,,,Senior Curator,neh@aber.ac.uk,,School of Art,,"Buarth Mawr, Aberystwyth, SY23","Vereinigtes Königreich, Großbritannien"
+person,Alphawood Purchase,Badlani,Chirag,,,,,,Executive Director,,,,,Chicago,Vereinigte Staaten von Amerika
+person,Amgueddfa Cymru National Museum Wales,Davies,Kath,Dr.,,,,,Director of Collections & Research,loans@museumwales.ac.uk,,"National Museum Cardiff
+Cathays Park",CF10 3NP,Cardiff,"Vereinigtes Königreich, Großbritannien"
+person,Arkansas Museum of Fine Arts,Lang,Brian,,,,,,Chief Curator,blang@arkmfa.org,,501 East Ninth Street,,"Little Rock, AR 72202",Vereinigte Staaten von Amerika
+person,Art Institute of Chicago,Rondeau,James,,,,,,President and Director,loanrequests@artic.edu,,,,,Vereinigte Staaten von Amerika
+person,"Avery Library, Columbia University",Bennett,Hannah,,,,,,Director,hb2644@columbia.edu (this email bounced),,"300 Avery Hall
+ 1172 Amsterdam Avenue
+ M.C. 0301",NY 10027,New York,Vereinigte Staaten von Amerika
+person,Baltimore Museum of Art,Naeem,Asma,Dr.,,,,,Director,loanrequest@artbma.org.,,10 Art Museum Drive,MD 21218,Baltimore,Vereinigte Staaten von Amerika
+person,Bibliothèque Nationale de France,Pécout,Monsieur Gilles,,,,,,Président,,,Bureau des prêts,75084 PARIS Cedex 02,"58, rue de Richelieu",Frankreich
+person,Birgit Gericke c/o Request forward letter via Paul Hoecker Research Group,Gericke,Birgit,,,,,,,birgit.gericke@googlemail.com,,,,Berlin,Deutschland
+couple,Bowdoin College Museum of Art,Collins Goodyear,Anne,,H. Goodyear,Frank,,,Co-Directors,agoodyear@bowdoin.edu,fgoodyear@bowdoin.edu,,,,Vereinigte Staaten von Amerika
+person,Brighton and Hove Museums and Art Galleries,Swain,Hedley,,,,,,Chief Executive of the Royal Pavilion & Museums Trust,hedley.swain@rpmt.org.uk,,4-5 Pavilion Buildings,BN1 1EE,Brighton,"Vereinigtes Königreich, Großbritannien"
+person,Canadian War Museum,Whitham,James,,,,,,Director of Collections,jim.whitham@warmuseum.ca,,1 Vimy Pl,ON K1A 0M8,Ottawa,Kanada
+person,Casa Ajsaris Collection,Segura,Juan Manuel,,,,,,Propietario de las obras,riodarro@gmail.com,,C/ Zafra 10,,18010,Spanien
+person,Centro culturale e museo Elisarion,Berger,Claudio,,,,,,Curator,info@elisarionminusio.ch,,Casella postale 115,,6648,Schweiz
+person,Centro culturale e museo Elisarion (Located at Fondazione Monte Verità),Gallo,Stefania,,,,,,Administrative Manager,stefania.gallo@monteverita.org,,,,,Schweiz
+person,Colección Pérez Simón,Pérez Simón,Juan Antonio,,,,,,"Presidente, Juntos Actuando por la Superación, A.C.",gracielatt@prodigy.net.mx,,Jalapa 78,06700 Ciudad de México,Col. Roma,Mexiko
+person,Collection Khatsenkov (via Christie's),Khatsenkov,Catherine,,,,,,,khats@libello.com,,,,,Monaco
+couple,Deutsches Historisches Museum,Gross,Raphael,Dr.,Backhaus,Fritz,Mr.,,President and Director of Collections,klein@dhm.de,,Unter den Linden 2,,10117,Deutschland
+person,Fine Arts Museums of San Francisco,Campbell,Thomas P.,,,,,,Director and CEO,jsonnenschein@famsf.org,,Executive Office; Fine Arts Museums of San Francisco; 50 Hagiwara Tea Garden Drive; San Francisco,,CA 94118,Vereinigte Staaten von Amerika
+person,Fukuoka Asian Art Museum,Etsuko,IWANAGA,,,,,,Director,egami@faam.ajibi.jp,,"7F
+ 8F Riverain Center Bldg.
+ 3-1 Shimokawabata-machi
+ Hakata-ku
+ Fukuoka City",812-0027,Fukuoka Prefecture,Japan
+person,Fundación Federico García Lorca,de los Ríos,Dña. Laura García Lorca,,,,,,Presidenta,lgl@garcia-lorca.org,,"Calle del Pinar, 23",,28006,Spanien
+person,Gothenburg Museum of Art,Steorn,Patrik,,,,,,Director,patrik.steorn@kultur.goteborg.se,,Götaplatsen 6,,412 56,Schweden
+person,Hälsinglands Museum,Bergroth,Joel,,,,,,Antikvarie,joel.bergroth@hudiksvall.se,,,,,Schweden
+person,Hirschsprung Collection,Oelsner,Gertrud,,,,,,Director,geroel@hirschsprung.dk,,Stockholmsgade 20,,2100,Dänemark
+person,Hôtel de Ville de Baulmes,,Municipalité de Baulmes,,,,,,,a.voutaz@baulmes.ch,,Rue de l'Hôtel de Ville 9,,1446,Schweiz
+person,Kallir Research Institute,Kallir,Jane,,,,,,President,jkallir@kallirresearch.org,,24 West 57th Street,,"New York, New York 10019",Vereinigte Staaten von Amerika
+person,Kamm Teapot Foundation,Douglas,Mary,,,,,,Collections Manager,mdouglas@kammteapotfoundation.org,,1950 Flintstone Drive,,"Statesville, NC 28677",Vereinigte Staaten von Amerika
+person,Kevin Scott c/o Request forward letter via Pallant House Gallery,Martin,Simon,,,,,,Director,s.martin@pallant.org.uk,,,,,"Vereinigtes Königreich, Großbritannien"
+person,Kinsey Institute,Fasman,Rebecca,,,,,,Curator,rfasman@indiana.edu,,"Lindley Hall
+ 150 S Woodlawn Ave",IN 47405,Bloomington,Vereinigte Staaten von Amerika
+person,"Kislak Center, University of Pennsylvania",Quimby,Sean,,,,,,Director,lynne@pobox.upenn.edu,,3420 Walnut Street,PA 19104-6206,Philadelphia,Vereinigte Staaten von Amerika
+person,Leeds Art Gallery,Hopes,David,Dr.,,,,,Head of Leeds Museums & Galleries,david.hopes@leeds.gov.uk,,"Leeds Museums and Galleries
+Leeds Discovery Centre",Leeds LS10 1LB,Carlisle Road,"Vereinigtes Königreich, Großbritannien"
+person,Magnus-Hirschfeld-Gesellschaft,Dose,Ralf,,,,,,Director,mhg@magnus-hirschfeld.de,,Kluckstr. 38 (im Hof),,10785,Deutschland
+person,Mark Brock c/o Request forward letter via Freeman's and Hindman,Brock,Mark,,,,,,,brockandco@gmail.com,,Concord,,Massachusetts,Vereinigte Staaten von Amerika
+person,Mathias Döpfner c/o Request forward letter via Sotheby's,Döpfner,Mathias,,,,,,,armgard.neubert@axelspringer.com,,,,Berlin,Deutschland
+person,Michael Rosenfeld Gallery,harrisburg,halley k,,,,,,Director,hkh@michaelrosenfeld.com,,NY,,NY,Vereinigte Staaten von Amerika
+person,Michael Sodomick Queer Art Collection,Sodomick,Michael,,,,,,,msodomick@gmail.com,,,,,Vereinigte Staaten von Amerika
+person,Michael Werner c/o Request forward letter via Lempertz,Werner,Michael,,,,,,,galeriewerner@michaelwerner.de,,,,,Deutschland
+person,Minneapolis Institute of Art,McGarry,Rachel,,,,,,Elizabeth MacMillan Chair of European Art and Curator of European Paintings and Works on Paper,rmcgarry@artsmia.org,,2400 3rd Ave S,MN 55404,Minneapolis,Vereinigte Staaten von Amerika
+person,Musée d’Orsay,Perrin,Paul,,,,,,Director of Conservation and Collections,paul.perrin@musee-orsay.fr,,Musée d'Orsay,75007 Paris,Esplanade Valéry Giscard d'Estaing,Frankreich
+person,Musée de Thonon-les-Bains,Beaujouan,Amélie,,,,,,Responsable des musées,a-beaujouan@ville-thonon.fr,,1 Pl. de l'Hôtel de ville,,74200,Frankreich
+person,Musée des Beaux-Arts de Marseille,Georget,Luc,,,,,,Conservateur en chef,musee-beauxarts@marseille.fr,,Palais Longchamp,,13233,Frankreich
+person,Musée d'Orsay,Perrin,Paul,,,,,,Director of Conservation and Collections,paul.perrin@musee-orsay.fr,,,,Esplanade Valéry Giscard d'Estaing 75007 Paris,Frankreich
+person,Musée Marie Laurencin,Yoshizawa,Hirohisa,,,,,,Director,museum@greencab.co.jp,,"3-15-1
+ Toyama
+ Shinjuku-ku",162-0052,Tokyo,Japan
+person,Museo Blaisten,Blaisten,Andrés,,,,,,,info@museoblaisten.com,,,,,Mexiko
+person,Museo de Arte de Lima,Lerner,Sharon,,,,,,Director,slerner@mali.pe,,Parque de la Exposición,Av. 9 de Diciembre 125,Cercado de Lima,Peru
+person,Museo Gregorio Prieto,García,Raúl Luis,,,,,,Director,,,,,C. Unión 10 13300 Valdepeñas,Spanien
+person,Museo Hendrik Christian Andersen,Di Monte,Maria Giuseppina,,,,,,Director,mariagiuseppina.dimonte@cultura.gov.it,,"Via Pasquale S. Mancini, 20",,00196,Italien
+person,Museo Provincial de Bellas Artes Franklin Rawson,Ruiz,Emanuel Diaz,,,,,,Director,contacto@museofranklinrawson.org,,,,Av. Libertador Gral. San Martín 862 oeste. San Juan. Argentina. CP: 5400,Argentinien
+person,Museos del Banco de la República,Echeverri,Nicolás Gómez,,,,,,Director Unidad de Artes y Otras Colecciones,mgonzpie@banrep.gov.co,,,,,Kolumbien
+person,Museu de Arte Moderna do Río de Janeiro,Eleison,Keyna,,,,,,Artistic Director,keyna.eleison@mam.rio,,"Av. Infante Dom Henrique, 85
+Parque do Flamengo",,Rio de Janeiro,Brasilien
+person,Museu Nacional d'Art de Catalunya,Serra Villalba,Pepe,,,,,,Director,biblioteca@museunacional.cat,,"Palau Nacional
+ Parc de Montjuïc
+ s/n",08038 Barcelona,Sants-Montjuïc,Spanien
+person,Museum der Bildenden Künste Leipzig,Weppelmann,Stefan,Dr.,,,,,Director,mdbk@leipzig.de,,Katharinenstrasse 10,,04109,Deutschland
+person,"Museum London, Canada",Bevan,Julie,,,,,,Executive Director,jbevan@museumlondon.ca,,421 Ridout Street North,N6A 5H4,"London, Ontario, Canada",Kanada
+person,National Gallery of Canada,Cassie,Angela,,,,,,Interim Director and CEO,exhibitions@gallery.ca,,380 Sussex Drive,K1N 9N4,"Ottawa, ON, Canada",Kanada
+person,National Gallery of Victoria,Gott,Ted,,,,,,Senior Curator,Ted.Gott@ngv.vic.gov.au,,,,PO Box 7259 Melbourne VIC 3004,Australien
+person,"National Museum of Modern Art, Zagreb",Franceschi,Branko,Mr.,,,,,Director,nmmu@nmmu.hr,,Andrije Hebranga 1,,10000,Kroatien
+person,National Museum of World Cultures,Bommel,Marieke van,,,,,,Director,collectie@wereldculturen.nl,,,,,Niederlande
+person,National Trust,McGrady,Hilary,,,,,,Director General,loans@nationaltrust.org.uk,,"National Trust Heelis
+ Kemble Drive",SN2 2NA,Swindon,"Vereinigtes Königreich, Großbritannien"
+person,Newark Museum of Art,Bloom,Tricia,,,,,,Senior Curator of American Art,tbloom@newarkmuseum.org,,49 Washington Street,,"Newark, NJ 07102",Vereinigte Staaten von Amerika
+person,Penn Art Collection,Dolby,Lynn,,,,,,Collections Manager,ldolby@upenn.edu,,3401 Market Street,PA 19104,Philadelphia,Vereinigte Staaten von Amerika
+person,Pennsylvania Academy of the Fine Arts,Marley,Anna O.,Dr.,,,,,Chief of Curatorial Affairs,AMarley@pafa.org,,118-128 North Broad Street,,"Philadelphia, PA 19102",Vereinigte Staaten von Amerika
+person,Philadelphia Museum of Art,Suda,Sasha,,,,,,Director,Elisa.Flynn@philamuseum.org,,P.O. Box 7646,,"Philadelphia, PA 19101-7646",Vereinigte Staaten von Amerika
+person,Pierre Lagrange (Former request via Pallant House),Martin,Simon,,,,,,Director,s.martin@pallant.org.uk,,,,,"Vereinigtes Königreich, Großbritannien"
+person,Pinacoteca de São Paulo,Volz,Jochen,,,,,,Director General,jvolz@pinacoteca.org.br,,,,,Brasilien
+person,Pinacoteca Ruben Berta,Amaral,Paulo,,,,,,Curator,pauloc.amaral@portoalegre.rs.gov.br,,"R. Duque de Caxias, 973",CEP 90010-280,"Centro Histórico, Porto Alegre - RS",Brasilien
+person,Prins Eugens Waldemarsudde,Sidén,Karin,,,,,,Director,info@waldemarsudde.se,,Prins Eugensväg 6,,"Djurgården, Stockholm",Schweden
+person,"Pritzker Legal Research Center, Northwestern University, School of Law Library",Pike,George H.,,,,,,Director of the Pritzker Legal Research Center,ghpike@law.northwestern.edu,,375 E Chicago Ave,IL 60611,Chicago,Vereinigte Staaten von Amerika
+person,Private collection of Andrea Karberg,Karberg,Andrea,,,,,,,ark@nivaagaard.dk,,,,,Dänemark
+person,Private Collection of Brian P. Coppola,Coppola,Brian P.,,,,,,Arthur F Thurnau Professor of Chemistry,bcoppola@umich.edu,,,,University of Michigan,Vereinigte Staaten von Amerika
+person,Private Collection of Don Bacigalupi (via Christie's),Bacigalupi,Don,,,,,,,don.baci@icloud.com,,NY,,NY,Vereinigte Staaten von Amerika
+person,Private Collection of Dr. Joseph Allen Boone,Boone,Joseph Allen,Dr.,,,,,Professor,josephbo@usc.edu,,,,,Vereinigte Staaten von Amerika
+person,Private Collection of Hans-Gerd Röder,Röder,Hans-Gerd,,,,,,,roeder@roederschuster.de,,Waldschmidtstr. 39,,60316,Deutschland
+person,Private collection of Harry Soderstrom,Soderstrom,Harry,,,,,,,heriksoderstrom@gmail.com,,,,,Vereinigte Staaten von Amerika
+couple,Private Collection of Irene Miller and Kim Harding,Miller,Irene,,Harding,Kim,,,,irenemiller@bigpond.com,,Sydney,,NSW,Australien
+person,Private Collection of James Bauerle,Bauerle,James,,,,,,,james@mail.dk,,Bredgade 27,,1260,Dänemark
+couple,Private Collection of Patricia Cronin and Deborah Kass,Cronin,Patricia,,Kass,Deborah,,,,pattie@patriciacronin.net,,244 Wyckoff Street,NY 11217,Brooklyn,Vereinigte Staaten von Amerika
+person,Private collection via Almeida & Dale,Schmatz,Erica,,,,,,Directora,erica@almeidaedale.com.br,,Rua Caconde 152,,Sao Paolo,Brasilien
+person,Sandra L Tirey c/o Request forward letter via Scholten Japanese Art,Tirey,Sandra L,,,,,,,sandra.tirey@gmail.com,,2424 White Oak Drive,,"Houston, TX 77009",Vereinigte Staaten von Amerika
+person,"Schomburg Center for Research in Black Culture, New York Public Library",Bivins,Joy L.,,,,,,Director,schomburgdirector@nypl.org,,515 Malcolm X Boulevard,NY 10037-1801,New York,Vereinigte Staaten von Amerika
+person,Signe and Ane Gyllenberg Foundation,Nylund,Lotta,,,,,,Chief Curator,lotta.nylund@gyllenbergs.fi,,Yrjonkatu 4 A 5,,FIN-00120,Finnland
+person,Slovak National Gallery,Kusá,Alexandra,Dr.,,,,,Director General,Alexandra.kusa@sng.sk,,Riecna 1,,815 13,Slovakei
+person,Smith College Museum of Art,Nicoll,Jessica,,,,,,Director & Louise Ines Doyle '34 Chief Curator,jfnicoll@smith.edu,,"20 Elm Street at
+Bedford Terrace",,"Northampton, MA",Vereinigte Staaten von Amerika
+person,Spencer Museum of Art,Hardy,Saralyn Reece,,,,,,Marilyn Stokstad Director,srh@ku.edu,,1301 Mississippi St Lawrence,,KS 66045,Vereinigte Staaten von Amerika
+person,Stadtmuseum Berlin,Spies,Paul,,,,,,Chairman and Director,ulrike.mueller@stadtmuseum.de,,Poststraße 13-14,,10178,Deutschland
+person,Statens Museum for Kunst (SMK),Bogh,Mikkel,,,,,,Director,direktionen@smk.dk,,"SMK – National Gallery of Denmark
+Statens Museum for Kunst",DK-1307 København K,Sølvgade 48-50,Dänemark
+person,The Charleston Trust,Hepburn,Nathaniel,,,,,,Director and Chief Executive,info@charleston.org.uk,,Charleston in Firle,BN8 6LL,East Sussex,"Vereinigtes Königreich, Großbritannien"
+person,The Courtauld,van Claerbergen,Ernst Vegelin,,,,,,Head of the Courtauld Gallery,Ernst.Vegelin@courtauld.ac.uk,,Somerset House,WC2R 0RN,London,"Vereinigtes Königreich, Großbritannien"
+person,The Shin Collection,Shin,Hong Gyu,,,,,,,shin@shin-gallery.com,,68 Orchard Street,,"New York, NY 10002",Vereinigte Staaten von Amerika
+person,Thorvaldsens Museum,Johansen,Annette,,,,,,Director,annette.johansen@kk.dk,,2 Bertel Thorvaldsens Plads,,DK-1213,Dänemark
+person,Todd Nakano,,"Schiller & Bodo, LLC",,,,,,,info@schillerandbodo.com,,,,New York,Vereinigte Staaten von Amerika
+person,Tokyo University of the Arts University Art Museum,Kurokawa,Hiroko,,,,,,Director,,,"12-8 Ueno Park
+ Taito-ku",110-8714,Tokyo,Japan
+person,Toledo Museum of Art,Levine,Adam M.,,,,,,"Edward Drummond and Florence Scott Libbey President, Director and CEO",,,P.O. Box 1013,Ohio 43697,Toledo,Vereinigte Staaten von Amerika
+person,Varde Museum,Jensen,Claus Kjeld,,,,,,Director,ckj@vardemuseerne.dk,,Lundvej 4,,DK-6800,Dänemark
+person,Victoria & Albert Museum,Hunt,Tristram,Dr.,,,,,Director,Loans_Section@vam.ac.uk,,Cromwell Rd,,London SW7,"Vereinigtes Königreich, Großbritannien"
+person,William Andrews Clark Memorial Library,Wilson,Bronwen,,,,,,Director,bwilson@humnet.ucla.edu,,2520 Cimarron St. Los Angeles,,CA 90018,Vereinigte Staaten von Amerika
+person,Woodstock Art Gallery,Reid,Mary,,,,,,Director,mreid@cityofwoodstock.ca,,PO Box 1539 Woodstock,,ON N4S OA7,Kanada
+person,Knoxville Museum of Art,Matijcio,Steven,,,,,,David L. Butler Executive Director,smatijcio@knoxart.org,,1050 World’s Fair Park Drive,,"Knoxville, TN 37916",Vereinigte Staaten von Amerika
+person,"Museo Nacional de Bellas Artes, Chile",Brodsky,Varinia,,,,,,Directora,cecilia.chellew@mnba.gob.cl,,José Miguel de la Barra 650,,8320356,Chile
+person,"Museum Utopie und Alltag, Beeskow",Wieloch,Andrea,,,,,,Director,Andrea.Wieloch@landkreis-oder-spree.de,,"Spreeinsel
+Access via Burg Beeskow",15848 Beeskow,Frankfurter Strasse 23,Deutschland
+person,Private Collection of Emanuele Bariani,Bariani,Emanuele,,,,,,,emanuele.bariani@aol.com,,1330 Waller Street,CA. 94117,San Francisco,Vereinigte Staaten von Amerika
+person,Minneapolis Institute of Art,Piccoli,Valéria,,,,,,Ken and Linda Cutler Chair of the Arts of the Americas,vpiccoli@artsmia.org,,2400 3rd Ave S,MN 55404,Minneapolis,Vereinigte Staaten von Amerika
+person,San Antonio Museum of Art,Ballew Neff,Emily,Dr.,,,,,Kelso Director,info@samuseum.org,,200 West Jones Avenue,,"San Antonio, Texas 78215",Vereinigte Staaten von Amerika
+person,Fundación Museos Bogotá,Barrera,Inés Pérez,,,,,,Directora,info@fundacionmuseos.com,,"Carrera 24G N° 20- 60 Sur – Centro Comercial y Cultural Nariño
+(Casa del Puente) (Barrio Restrepo Occidental)
+Localidad Antonio Nariño",Código Postal: 111511,"Bogotá D.C., Colombia.",Kolumbien
+person,"Houghton Library, Harvard University",Hyry,Thomas,,,,,,Florence Fearrington Librarian of Houghton Library,hyry@fas.harvard.edu,,,,,Vereinigte Staaten von Amerika
+person,Private collection of Roberto Falconí-Peet,Falconí-Peet,Roberto,,,,,,,roberto_falconi@hotmail.com,,,,,Ecuador
+person,Private collector via Fundación Museos Bogotá,Cristancho,David,,,,,,Subdirector,fundacionmuseosbogota@gmail.com,,Carrera 24G N° 20- 60 Sur – Centro Comercial y Cultural Nariño,,Bogotá D.C.,Kolumbien
+person,Archivo Arkhé,Badawi,Halim,,,,,,Director,halimbadawi22@gmail.com,,"Calle del Dr. Fourquet
+ 18
+ planta baja",28012 Madrid,Centro,Spanien
+person,Library of Congress,Hayden,Carla,,,,,,Librarian of Congress,ExhibitLoan@loc.gov,,"101 Independence Avenue, SE","Washington, DC 20540-4950",Exhibits Office; LA G-25,Vereinigte Staaten von Amerika
+institution,National Library of Wales,,,,,,,,,,,,,,
+person,Getty Research Institute,Rigolo,Pietro,,,,,,Associate Curator for Modern and Contemporary Collections,PRigolo@getty.edu,,,,,
+person,Historic Richmond Town,DeFillo,Carli,,,,,,Collections Manager,crdefillo@historicrichmondtown.org,,,,,
+person,"Instituto de Investigaciones Estéticas, UNAM",Guadarrama,Angélica Velázquez,Dr.,,,,,Directora,iie.direccion@unam.mx,,,,,
+institution,Jersey Heritage Collections,,,,,,,,,,,,,,
+person,Library of Congress,Hayden,Carla,,,,,,Librarian of Congress,ExhibitLoan@loc.gov,,"101 Independence Avenue, SE","Washington, DC 20540-4950",Exhibits Office; LA G-25,Vereinigte Staaten von Amerika
+person,Magnus-Hirschfeld-Gesellschaft,Wolfert,Raimund,,,,,,,rwolfert@magnus.in-berlin.de,,,,,
+institution,MIT Libraries,,,,,,,,,,,,,,
+person,Museo Gregorio Prieto,Rubio,Jesús,,,,,,,jesusrubio@gregorioprieto.org,,,,,
+institution,Museum of the City of New York,,,,,,,,,,,,,,
+person,Stanford University Libraries,Keller,Michael A.,,,,,,"Vice Provost, Academic Council, Stanford University Libraries",Michael.Keller@stanford.edu,,,,,Vereinigte Staaten von Amerika
+person,Fundación Pública Gallega Camilo José Cela,Rodríguez Del Corral,Covadonga,,,,,,Director,biblioteca@fundacioncela.com,,"Sta María, 22-Iria Flavia",,15917. Padrón. A Coruña,Spanien
+person,Newberry Library,Tantillo,Astrida Orle,,,,,,President,tantilloa@newberry.org,,60 West Walton Street,Illinois 60610,Chicago,Vereinigte Staaten von Amerika
+person,Weisman Art Museum,Peña-Gutiérrez,Alejandra,,,,,,Director,apenagut@umn.edu,,333 East River Road,,"Minneapolis, MN 55455",Vereinigte Staaten von Amerika
+person,The Metropolitan Museum of Art,Dunn,Ashley,,,,,,Associate Curator,Ashley.Dunn@metmuseum.org,,1000 Fifth Avenue,,"New York, NY 10028",Vereinigte Staaten von Amerika
+institution,Cinemateca Brasileira,,,,,,,,,atendimento@cinemateca.org.br,,,,,
+person,Currier Museum of Art,Graham,Karen,,,,,,Interim Director & Chief Operations Officer,,,150 Ash St,NH 03104,Manchester,Vereinigte Staaten von Amerika
+institution,Weisman Art Museum,,,,,,,,,,,,,,

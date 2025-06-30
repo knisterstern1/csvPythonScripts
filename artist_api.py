@@ -71,6 +71,7 @@ class Artist:
         self.livedBefore = ''
         self.livedAfter = ''
         self.epoche = ''
+        self.life_data = ''
         self.nationalities = []
         self.query_failed = False
         self.zsession = zsession
@@ -92,10 +93,20 @@ class Artist:
         """Set epoche
         """
         if self.birth != '':
+            if '/' in self.birth:
+                self.birth = self.birth.replace('/','.')
             year = self.birth.split('.')[-1]
             add_to_year = 2 if int(year[2:]) >= 80 else 1
             ep_year = int(year[0:2]) + add_to_year
             self.epoche = str(ep_year) + '. Jh.'
+            if self.death != '':
+                if '/' in self.death:
+                    self.death = self.death.replace('/','.')
+                death_year = self.death.split('.')[-1]
+                if '01.01' in self.birth and '01.01' in self.death:
+                    self.birth = year
+                    self.death = death_year
+                self.life_data = f'{year}–{death_year}'
 
     def update(self):
         """Set the live span inforamtion

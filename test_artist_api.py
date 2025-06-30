@@ -36,8 +36,10 @@ class TestArtistApi(unittest.TestCase):
     def test_artist_epoche(self):
         artist = Artist('Test Test', None, False)
         artist.birth = '01.12.1888'
+        artist.death = '12/12/1938'
         artist._set_epoche()
         self.assertEqual(artist.epoche, '20. Jh.')
+        self.assertEqual(artist.life_data, '1888–1938')
 
 if __name__ == "__main__":
     unittest.main()
