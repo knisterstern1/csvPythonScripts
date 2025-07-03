@@ -29,7 +29,7 @@ if [[ `echo $@ | grep '\(^[-]h$\|[-][-]help\)'` != "" ]];then
       usage 0
 fi
 #1}}}
-function processLine () { #{{{1
+function processLineFirst () { #{{{1
    i=$1
    if [[ $i -gt 1 ]];then
          pipaId=$(sed -n ''"$i"' p' < $file | awk -F"," '{ print $1 }')
@@ -52,8 +52,31 @@ function processLine () { #{{{1
          fi
       fi
 } #1}}}
+function processLine () { #{{{1
+   i=$1
+   if [[ $i -gt 1 ]];then
+         pipaId=$(sed -n ''"$i"' p' < $file | awk -F"," '{ print $1 }')
+         picName=$(sed -n ''"$i"' p' < $file | awk -F"," '{ print $2 }')
+         category=$(sed -n ''"$i"' p' < $file | awk -F"," '{ print $3 }')
+         id=$(sed -n ''"$i"' p' < $file | awk -F"," '{ print $4 }')
+         url="https://kumu.picturepark.com/contents/mediaLibrary/${pipaId}/metadata" 
+         firefox $url &
+         read -p "Is ${picName} change Auflicht (VIS) to [s/d/u/i/r/m/p/x/?]" answer
+         if [[ "$answer" ]];then
+            if [[ "$answer" == "?" ]];then
+               sed -n ''"$i"' p' < $file >> $unsure
+            else 
+               newPicName=$(echo $picName | sed 's/\(kw1\)\(a\)\(.*\)/\1'"${answer}"'\3/')
+               echo "$pipaId,$newPicName,$category,$id" >> $output
+            fi
+         else
+            sed -n ''"$i"' p' < $file >> $output
+         fi
+      fi
+} #1}}}
 file=$1
 output="Processed_${file}"
+unsure="Unsure_${file}"
 if [[ -e $output ]];then
    lastLine=$(sed -n '=' < $output | tail -1) 
    if [[ "$lastLine" ]];then
