@@ -45,9 +45,9 @@ XML_SEARCH = b'<?xml version="1.0" encoding="UTF-8"?> \
                                 <and> \
                                     <startsNotWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW.Raum vis-"/> \
                                      <or> \
-                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="HB\."/> \
-                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="NB\."/> \
-                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW\."/> \
+                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="HB"/> \
+                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="NB"/> \
+                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW"/> \
                                     </or> \
                                 </and> \
                             </expert> \
