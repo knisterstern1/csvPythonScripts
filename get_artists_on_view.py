@@ -42,11 +42,14 @@ XML_SEARCH = b'<?xml version="1.0" encoding="UTF-8"?> \
                     <module name="Person"> \
                         <search limit="7000" offset="0"> \
                             <expert> \
-                                <or> \
-                                    <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="HB"/> \
-                                    <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="NB"/> \
-                                    <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW"/> \
-                                </or> \
+                                <and> \
+                                    <startsNotWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW.Raum vis-"/> \
+                                     <or> \
+                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="HB\."/> \
+                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="NB\."/> \
+                                        <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW\."/> \
+                                    </or> \
+                                </and> \
                             </expert> \
                             <sort> \
                                 <field fieldPath="PerSurNameTxt" direction="Ascending"/> \
@@ -63,6 +66,7 @@ def get_artists_on_view(login_data):
     headers = {'Content-Type':'application/xml; charset=UTF-8'}
     url = login_data['url'] + '/ria-ws/application/module/Person/export/' + login_data['export']
     response = session.post(url, data=XML_SEARCH, headers=headers) 
+    session.close()
     if response.status_code == 200:
         return json.loads(response.content)
     else:
