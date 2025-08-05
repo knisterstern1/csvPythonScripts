@@ -43,12 +43,12 @@ XML_SEARCH = b'<?xml version="1.0" encoding="UTF-8"?> \
                         <search limit="7000" offset="0"> \
                             <expert> \
                                 <and> \
-                                    <startsNotWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW.Raum vis-"/> \
                                      <or> \
                                         <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="HB"/> \
                                         <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="NB"/> \
                                         <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW"/> \
                                     </or> \
+                                    <startsNotWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW.Raum vis-"/> \
                                 </and> \
                             </expert> \
                             <sort> \
