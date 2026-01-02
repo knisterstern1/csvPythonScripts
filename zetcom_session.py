@@ -132,6 +132,17 @@ class ZetcomSession:
         else:
             raise Exception(response.status_code)
 
+    def put(self, url: str, xml_string: str) -> LET:
+        """Put to ria application and receive a xml response
+        """
+        headers = {'Content-Type':'application/xml; charset=UTF-8', 'Accept':'application/xml'}
+        response = self.session.put(self.server + url, data=xml_string, headers=headers) 
+        if response.status_code == 200:
+            return LET.fromstring(response.content)
+        else:
+            raise Exception(response.status_code)
+
+
     def close(self):
         if self.key:
             self.session.delete(self.server +  '/ria-ws/application/session/' + self.key)
