@@ -33,9 +33,10 @@ DEBUG = False
 class Result:
     """This class represents the result of the Mediastandard check
     """
-    def __init__(self, check_passed=True, error_msg=""): 
+    def __init__(self, check_passed=True, error_msg="", groups=None): 
         self.check_passed = check_passed
         self.error_msg = error_msg
+        self.groups = groups
 
     def addMessage(self, message):
         """Adds a error message
@@ -80,7 +81,6 @@ class MediaStandard:
         self.version = "3.0"
         self.rules = []
 
-
     def check_filename(self, path: PosixPath) ->Result: 
         """Check if filename conforms to rules
         """
@@ -89,18 +89,36 @@ class MediaStandard:
             result = rule.applies(path.name) 
             if not result.check_passed:
                 return result
+        m = self.pattern.match(path.name)
+        if m is not None:
+            result = Result(True, '',m.groupdict())
         return result
 
-    def load(self, json_file):
+    def check_content(self, result: Result) ->Result: 
+        """Check if filename conforms to rules
+        """
+        for key in result.groups.keys():
+            if key in self.content.keys():
+                label = self.vocabulary[key] if key in self.vocabulary.keys() else key
+                print(f'{label}: {self.content[key][result.groups[key]]}')
+        return result
+
+
+    def load(self, json_file, verbose=False):
         """Load a specific standard
         """
         with open(json_file) as json_ref:
             data = json.load(json_ref)
             self.version = data['info']['version']
             self.year = data['info']['year']
+            self.pattern = re.compile(urllib.parse.unquote(data['pattern']))
+            self.content = data['content']
+            self.vocabulary = data['vocabulary']
             for rule in data['rules']:
                 self.rules.append(Rule(rule))
         print(Fore.MAGENTA + f"Medienstandard Version {self.version}, {self.year} geladen ..." + Style.RESET_ALL)
+        if verbose:
+            print(Fore.MAGENTA + data['comment'] + Style.RESET_ALL)
 
 def usage():
     """prints information on how to use the script
@@ -115,12 +133,14 @@ def main(argv):
         OPTIONS:
         -h|--help       show help
         -j|--json=file  json file
+        -v|--verbose    print infomation about json
     
         :return: exit code (int)
     """
     json="medienstandard_v3_regex.json"
+    verbose = False
     try:
-        opts, args = getopt.getopt(argv, "hj:", ["help","json="])
+        opts, args = getopt.getopt(argv, "hj:v", ["help","json=", "verbose"])
     except getopt.GetoptError:
         usage()
         return 2
@@ -128,12 +148,15 @@ def main(argv):
         if opt in ('-h', '--help'):
             usage()
             return 0
+        elif opt in ('-v', '--verbose'):
+            verbose = True 
         elif opt in ('-j', '--json'):
             json = arg
     checker = MediaStandard()
-    checker.load(json)
+    checker.load(json, verbose)
     filenames = get_filenames([ Path(arg) for arg in args ])
-    print(filenames)
+    
+    print(Fore.MAGENTA + f'Checking {len(filenames)} filename{"s" if len(filenames) > 1 else ""}.' + Style.RESET_ALL)
     if len(filenames) < 1:
         print('Nothing to do ...')
         usage()
@@ -141,6 +164,9 @@ def main(argv):
         result = checker.check_filename(file_path)
         if not result.check_passed:
             print(f'File {file_path.absolute()} ->Fehler: {result.error_msg}')
+        else:
+            print(f'Informationen zu {file_path.absolute()}: ')
+            checker.check_content(result)
     return 0 
 
 def get_filenames(paths: List[PosixPath]) -> List[PosixPath]:
