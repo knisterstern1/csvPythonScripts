@@ -1,15 +1,15 @@
 {"info":{"version":"3.0.1", "year":"2025"},
- "comment":"\nUse urllib.parse.unquote (python package \"urllib\") to unquote pattern and regex",
+ "comment":"\nUse urllib.parse.unquote (python package \"urllib\") to unquote pattern and regex in json file.",
  "pattern":"%5E%28%28%3FP%3Cowner%3E%5CS%7B1%7D%29%28%3FP%3CareaCategory%3E%28%3F%3D%5Bow%5D%29%28%5Bow%5D%5Cd%7B1%7D%5Cw%7B1%7D%29%7C%28%5Cw%7B1%7D%5Cd%7B2%7D%29%29_%28%3FP%3Cids%3E%28%3F%3A%5Barlpvz%5Cd%5D%3F%28%3F%3A%5Cd%7B6%7D%28%3F%3A-%5Barlpvz0-9%5D%5Cd%7B6%7D%29%7B0%2C23%7D%3F%29%2B_%3F%29%29%3F%28%3FP%3Cdate%3E%28%5B%5Cdx%5D%7B4%7D%29-%28%5B%5Cdx%5D%7B2%7D%29-%28%5B%5Cdx%5D%7B2%7D%29%29%28%3FP%3Ctext%3E%28%3F%3A%28%3F%21_s-%29_%5Ba-z0-9-%5D%7B1%2C%7D%29%29%3F%28%3FP%3Csuffix%3E%28%3F%3A_s-%28%3F%21-%29%28%3F%21.%2A--%29%5Ba-z0-9-%5D%7B1%2C%7D%29%29%3F%28%3FP%3Cextension%3E%5C.%5Ba-z0-9%5D%7B2%2C4%7D%29%29%24",
  "rules":[
     {"regex":"%5E.%7B1%2C80%7D%24","error":"Der Dateiname darf inkl. Dateiendung nicht mehr als 80 Zeichen enthalten."},
     {"regex":"%5E%5Ba-z0-9_%5C-%5D%2A%5C.%5Ba-z0-9_%5C-%5D%2A%24",
      "error":"Der Dateiname enthält ungültige Zeichen",
      "onError": [
-        {"regex":".*[A-Z].*","error":"Grossbuchstaben vorhanden!"},
-        {"regex":".*[ä-ü].*","error":"Umlaute vorhanden!"},
-        {"regex":".%2A%5Cs.%2A","error":"Leerzeichen vorhanden!"},
-        {"regex":"%5E.%2A%5C..%2A%5C.%5Ba-z%5D%7B2%2C4%7D%24","error":"Der Punkt darf nur als Trennzeichen für die Dateiendung verwendet werden!"}
+        {"regex":"%28%3FP%3Cbefore%3E.%2A%29%28%3FP%3Cerror%3E%5BA-Z%5D%2B%29%28%3FP%3Cafter%3E.%2A%29","error":"Grossbuchstaben vorhanden!"},
+        {"regex":"%28%3FP%3Cbefore%3E.%2A%29%28%3FP%3Cerror%3E%5B%C3%A4-%C3%BC%5D%29%28%3FP%3Cafter%3E.%2A%29","error":"Umlaute vorhanden!"},
+        {"regex":"%28%3FP%3Cbefore%3E.%2A%29%28%3FP%3Cerror%3E%5Cs%29%28%3FP%3Cafter%3E.%2A%29","error":"Leerzeichen vorhanden!"},
+        {"regex":"%28%3FP%3Cbefore%3E%5E.%2A%29%28%3FP%3Cerror%3E%5C.%29%28%3FP%3Cafter%3E.%2A%5C.%5Ba-z%5D%7B2%2C4%7D%24%29","error":"Der Punkt darf nur als Trennzeichen für die Dateiendung verwendet werden!"}
      ]},
     {"regex":"%5E%5Ba-tx%5D.%2A%24","error":"Das erste Zeichen (Eigentümer) ist ungültig."},
     {"regex":"%5E.%5Bwrodpabs%5D%5B0-9%5D%5Ba-z0-9%5D.%2A%24","error":"Die Kategorie (2.-4. Zeichen) ist ungültig."},

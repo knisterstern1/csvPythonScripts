@@ -38,13 +38,27 @@ class Result:
         self.error_msg = error_msg
         self.groups = groups
 
-    def addMessage(self, message):
+    def addMessage(self, message: str, m: re.Match):
         """Adds a error message
         """
+        if len(m.groupdict()):
+            self.groups = m.groupdict()
         if ":" in self.error_msg:
             self.error_msg = self.error_msg + " " + message
         else:
             self.error_msg = self.error_msg + ": " + message
+
+    def getFilenameInfo(self, file_path: PosixPath, color: str) ->str:
+        """Get graphical information about filename
+        """
+        if file_path.exists():
+            if not self.check_passed and self.groups:
+                return color + f'{file_path.parent.absolute()}{os.sep}{self.groups["before"]}' + Fore.RED + f'{self.groups["error"]}' + Style.RESET_ALL + color + f'{self.groups["after"]}' + Style.RESET_ALL
+            return file_path.absolute()
+        else:
+            if not self.check_passed and self.groups:
+                return color + f'{self.groups["before"]}' + Fore.RED + f'{self.groups["error"]}' + Style.RESET_ALL + color + f'{self.groups["after"]}' + Style.RESET_ALL
+            return file_path.name
 
 class Rule:
     """This class represents a rule of the mediastandard
@@ -64,11 +78,12 @@ class Rule:
             return Result()
         errorResult = Result(False, self.error)
         for onErrorRule in self.onErrorRules:
-            if onErrorRule.findError(filename):
-                errorResult.addMessage(onErrorRule.error)
+            m = onErrorRule.findError(filename)
+            if m:
+                errorResult.addMessage(onErrorRule.error, m)
         return errorResult
 
-    def findError(self, filename: str) ->bool:
+    def findError(self, filename: str) ->re.Match:
         """Return true if pattern matches
         """
         return self.pattern.match(filename)
@@ -163,10 +178,18 @@ def main(argv):
     for file_path in filenames: 
         result = checker.check_filename(file_path)
         if not result.check_passed:
-            print(f'File {file_path.absolute()} ->Fehler: {result.error_msg}')
+            filename = result.getFilenameInfo(file_path, Fore.LIGHTBLUE_EX)
+            if verbose:
+                print(f'{filename}\t[' + Fore.RED + 'FAIL' + Style.RESET_ALL + f']: {result.error_msg}')
+            else:
+                print(f'{filename}\t[' + Fore.RED + 'FAIL' + Style.RESET_ALL + f']')
         else:
-            print(f'Informationen zu {file_path.absolute()}: ')
-            checker.check_content(result)
+            filename = Fore.LIGHTBLUE_EX + file_path.absolute() + Style.RESET_ALL if file_path.exists() else Fore.LIGHTBLUE_EX + file_path.name + Style.RESET_ALL
+            if verbose:
+                print(f'Informationen zu {filename}: ')
+                checker.check_content(result)
+            else:
+                print(f'{filename}\t[OK]')
     return 0 
 
 def get_filenames(paths: List[PosixPath]) -> List[PosixPath]:
