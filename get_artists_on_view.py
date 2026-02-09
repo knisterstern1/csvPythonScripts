@@ -49,6 +49,7 @@ XML_SEARCH = b'<?xml version="1.0" encoding="UTF-8"?> \
                                         <startsWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW"/> \
                                     </or> \
                                     <startsNotWithField fieldPath="PerObjectRef.ObjCurrentLocationVrt" operand="GW.Raum vis-"/> \
+                                    <startsWithField fieldPath="PerSurNameTxt" operand="A"/> \
                                 </and> \
                             </expert> \
                             <sort> \
@@ -64,12 +65,22 @@ def get_artists_on_view(login_data):
     session = requests.Session()
     session.auth = (f'user[{login_data["user"]}]', f'password[{login_data["password"]}]')
     headers = {'Content-Type':'application/xml; charset=UTF-8'}
-    url = login_data['url'] + '/ria-ws/application/module/Person/export/' + login_data['export']
+    url = login_data['url'] + '/ria-ws/application/module/Person/export/' + login_data['all_export']
     response = session.post(url, data=XML_SEARCH, headers=headers) 
-    session.close()
     if response.status_code == 200:
-        return json.loads(response.content)
+        artists_on_view = json.loads(response.content)
+        for artist in artists_on_view:
+            url = login_data['url'] + '/ria-ws/application/module/Person/' + artist['ID'] + '/export/'+ login_data['single_export']
+            response = session.get(url, headers=headers) 
+            if response.status_code == 200:
+                objects = json.loads(response.content)
+                print(objects)
+                if len(objects) > 0:
+                    artist['Objekte'] = objects[0]['Objekte']
+        session.close()
+        return artists_on_view
     else:
+        session.close()
         raise Exception(response.status_code)
 
 def usage():
@@ -82,7 +93,8 @@ def main(argv):
 
     get_artists_on_view.py
     """
-    login_data = { 'url': 'https://mptest.kumu.swiss', 'user': 'SimpleUserTest', 'export': '95025' }
+    #login_data = { 'url': 'https://mptest.kumu.swiss', 'user': 'SimpleUserTest', 'all_export': '103025', 'single_export': '95025' }
+    login_data = { 'url': 'https://mp.kumu.swiss', 'user': 'KumuApiUser', 'all_export': '98025', 'single_export': '92041' }
     try:
         credentials = keyring.get_credential(login_data['url'],login_data['user'])
         login_data['password'] = credentials.password
