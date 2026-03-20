@@ -66,11 +66,11 @@ class SchemaItem:
 class ZetcomSession:
     """A zetcom session class.
     """
-    def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss'): 
+    def __init__(self, username="SimpleUserTest", server='https://mptest.kumu.swiss', key=None): 
         self.server = server
         self.username = username
         self.session = requests.Session()
-        self.key = None
+        self.key = key
 
     def get_json(self, url: str) ->List[dict]:
         """GET a json and return a List of dictonaries 
@@ -145,5 +145,63 @@ class ZetcomSession:
 
     def close(self):
         if self.key:
-            self.session.delete(self.server +  '/ria-ws/application/session/' + self.key)
+            r = self.session.delete(self.server +  '/ria-ws/application/session/' + self.key)
+            print(self.server +  '/ria-ws/application/session/' + self.key)
+            print(r.status_code)
         self.session.close()
+
+def usage():
+    """prints information on how to use the script
+    """
+    print(main.__doc__)
+
+def main(argv):
+    """This program can be used to get a session id for a user or close the session.
+
+    zetcom_session.py [OPTIONS] 
+
+        OPTIONS:
+        -h|--help                      show help
+        -c|--close=key                 close the session with key 
+        -o|--open                      open new session [default]
+        -s|--server + mplus:           provide mplus address
+        -u|--user:                     provide username as email address
+    
+        :return: exit code (int)
+    """
+    username = 'SimpleUserTest'
+    zetcom_server = 'https://mptest.kumu.swiss'
+    open_session = True
+    key = None
+    try:
+        opts, args = getopt.getopt(argv, "hc:os:u:", ["help", "close=","open","server=", "user="])
+    except getopt.GetoptError:
+        usage()
+        return 2
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            usage()
+            return 0
+        elif opt in ('-c', '--close'):
+            key = arg
+            open_session = False
+        elif opt in ('-o', '--open'):
+            open_session = True
+        elif opt in ('-s', '--server'):
+            zetcom_server = arg
+        elif opt in ('-u', '--user'):
+            username = arg
+    if not open_session and key is not None:
+        session = ZetcomSession(username, zetcom_server, key)
+        session.close()
+        print(f'Session closed for key {key}.')
+    elif open_session:
+        session = ZetcomSession(username, zetcom_server)
+        session.open()
+        print(f'Success: session key generated: {session.key}!')
+        print(f'user[{session.username}]:session[{session.key}]')
+    return 0 
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
