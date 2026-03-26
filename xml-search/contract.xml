@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://www.zetcom.com/ria/ws/module/search" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.zetcom.com/ria/ws/module/search http://www.zetcom.com/ria/ws/module/search/search_1_4.xsd">
+   <modules>
+      <module name="Contract">
+         <search limit="10" offset="0">
+            <expert>
+               <and>
+                  <equalsField fieldPath="CtrTypeVoc" operand="96716"/>
+                  <betweenIncl fieldPath="CtrExhibitionRef.ExhBeginDateDat" operand1="2026-01-01" operand2="2026-03-31"/>
+               </and>
+            </expert>
+         </search>
+      </module>
+   </modules>
+</application>
